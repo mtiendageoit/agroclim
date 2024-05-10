@@ -62,7 +62,7 @@
                             <p>Mis lotes</p>
                           </div>
                           <div class="dropright">
-                            <a href="javascript:void(0)" class="text-primary" data-toggle="dropdown">
+                            <a href="javascript:void(0)" class="nav-link p-0 disabled-on-edit-geometry" data-toggle="dropdown">
                               <p>+ Nuevo lote</p>
                             </a>
                             <div class="dropdown-menu dropdown-menu-bottom">
@@ -145,7 +145,7 @@
               <div class="form-row">
                 <div class="form-group col">
                   <label class="form-label">Cultivo</label>
-                  <select id="fieldCrop" class="form-control" style="width: 100%" data-allow-clear="true">
+                  <select id="fieldCrop" class="form-control" style="width: 100%" data-allow-clear="true" data-placeholder="Selecciona un cultivo">
                     <option></option>
                     <option th:each="crop : ${crops}" th:value="${crop.id}"
                       th:text="${crop.name}">

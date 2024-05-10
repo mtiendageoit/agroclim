@@ -32,8 +32,14 @@ const Fields = ((element) => {
   }
 
   function showEditGeometryTools(visible) {
-    if (visible) $('#editFieldGeometryTools').hide().slideDown('fast');
-    else $('#editFieldGeometryTools').show().slideUp('fast');
+    if (visible) {
+      $('#editFieldGeometryTools').hide().slideDown('fast');
+      $('.disabled-on-edit-geometry').addClass('disabled');
+    }
+    else {
+      $('#editFieldGeometryTools').show().slideUp('fast');
+      $('.disabled-on-edit-geometry').removeClass('disabled');
+    }
   }
 
   function init() {
@@ -254,7 +260,7 @@ const Fields = ((element) => {
           </div>
         <div class="btn-group dropright">
           <button id="field-ddm-${field.uuid}" type="button"
-            class="btn btn-sm btn-default icon-btn borderless rounded-pill md-btn-flat dropdown-toggle hide-arrow"
+            class="btn btn-sm btn-default icon-btn borderless rounded-pill md-btn-flat dropdown-toggle hide-arrow disabled-on-edit-geometry"
             data-toggle="dropdown" aria-expanded="true" data-boundary="viewport">
             <i class="fas fa-ellipsis-v"></i>
           </button>
