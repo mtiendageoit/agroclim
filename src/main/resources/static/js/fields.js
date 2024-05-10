@@ -15,6 +15,22 @@ const Fields = ((element) => {
     showEditGeometryTools(true);
   }
 
+  element.editAttributes = (uuid) => {
+    const field = OlMap.fieldByUuid(uuid);
+    if (field) {
+      resetFieldModal();
+
+      $('#fieldName').val(field.name);
+      $('#fieldCrop').val(field.cropId).trigger('change.select2');
+      $('#fieldBorderColor').minicolors('value', field.borderColor);
+      $('#fieldBorderSize').val(field.borderSize);
+      $('#fieldPlantingDate').datepicker('update', field.plantingDate);
+      $('#fieldHarvestDate').datepicker('update', field.harvestDate);
+
+      $('#saveFieldModal').data('action', 'update').data('uuid', uuid).modal('show');
+    }
+  }
+
   function showEditGeometryTools(visible) {
     if (visible) $('#editFieldGeometryTools').hide().slideDown('fast');
     else $('#editFieldGeometryTools').show().slideUp('fast');
@@ -122,17 +138,14 @@ const Fields = ((element) => {
     event.preventDefault();
     const field = getFieldData();
 
-    disableButton($('#fmsCancelBtn'));
-    disableButton($('#fmsSaveBtn'), true);
+    const action = $('#saveFieldModal').data('action');
 
-    $.post({
-      url: `api/fields`,
-      contentType: 'application/json'
-    }, JSON.stringify(field)).done(onSaveFieldSuccess).fail(() => {
-      toastr.warning(`Ocurrio un error al ejecutar la acción, intente nuevamente más tarde.`);
-    }).always(() => {
-      enableButton($('#fmsSaveBtn,#fmsCancelBtn'));
-    });
+    if (action === 'create') {
+      insertField(field);
+    } else if (action === 'update') {
+      const uuid = $('#saveFieldModal').data('uuid');
+      updateField(uuid, field);
+    }
   }
 
   function getFieldData() {
@@ -147,20 +160,55 @@ const Fields = ((element) => {
     };
   }
 
-  function onSaveFieldSuccess(field) {
-    resetFieldModal();
+  function insertField(field) {
+    disableButton($('#fmsCancelBtn'));
+    disableButton($('#fmsSaveBtn'), true);
 
-    OlMap.removeDrawedField();
-    showField(field);
+    $.post({
+      url: `api/fields`,
+      contentType: 'application/json'
+    }, JSON.stringify(field)).done((field) => {
+      resetFieldModal();
 
-    $('#saveFieldModal').modal('hide');
-    toastr.success(`Lote guardado exitosamente.`);
+      OlMap.removeDrawedField();
+      showField(field);
+
+      $('#saveFieldModal').modal('hide');
+      toastr.success(`Lote guardado exitosamente.`);
+    }).fail(() => {
+      toastr.warning(`Ocurrio un error al ejecutar la acción, intente nuevamente más tarde.`);
+    }).always(() => {
+      enableButton($('#fmsSaveBtn,#fmsCancelBtn'));
+    });
+  }
+
+  function updateField(uuid, field) {
+    disableButton($('#fmsCancelBtn'));
+    disableButton($('#fmsSaveBtn'), true);
+
+    $.post({
+      method: 'PUT',
+      url: `api/fields/${uuid}`,
+      contentType: 'application/json'
+    }, JSON.stringify(field)).done((field) => {
+      resetFieldModal();
+      OlMap.updateFeatureField(field);
+
+      $(`#field-${uuid}`).replaceWith($(templateFieldUI(field)));
+
+      $('#saveFieldModal').modal('hide');
+      toastr.success(`Lote actualizado exitosamente.`);
+    }).fail(() => {
+      toastr.warning(`Ocurrio un error al ejecutar la acción, intente nuevamente más tarde.`);
+    }).always(() => {
+      enableButton($('#fmsSaveBtn,#fmsCancelBtn'));
+    });
   }
 
   function activateDrawField() {
     OlMap.activateDrawField(() => {
       resetFieldModal();
-      $('#saveFieldModal').modal('show');
+      $('#saveFieldModal').data('action', 'create').modal('show');
       setTimeout(() => { $('#fieldName').select(); }, 300);
     });
   }
@@ -222,7 +270,7 @@ const Fields = ((element) => {
                 <a class="dropdown-item" onclick="Fields.editGeometry('${field.uuid}')" href="javascript:void(0)">
                   <i class="fas fa-vector-square"></i>&nbsp; Límites
                 </a>
-                <a class="dropdown-item" href="javascript:void(0)">
+                <a class="dropdown-item" onclick="Fields.editAttributes('${field.uuid}')" href="javascript:void(0)">
                   <i class="far fa-list-alt"></i>&nbsp; Datos y cultivo
                 </a>
               </div>

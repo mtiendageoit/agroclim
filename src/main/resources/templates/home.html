@@ -110,9 +110,11 @@
                     <div class="flex-grow-1 position-relative">
                       <div class="w-100 h-100">
                         <div id="map"></div>
-                        <div id="editFieldGeometryTools" class="mb-3" style="position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); display: none;">
+                        <div id="editFieldGeometryTools" class="mb-3"
+                          style="position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); display: none;">
                           <div class="rounded-pill bg-dark text-center text-white d-flex flex-row p-3">
-                            <button id="cancelFieldGeometry" class="btn rounded-pill btn-secondary px-5">Cancelar</button>
+                            <button id="cancelFieldGeometry"
+                              class="btn rounded-pill btn-secondary px-5">Cancelar</button>
                             <button id="saveFieldGeometry" class="btn rounded-pill btn-success px-5">Guardar</button>
                           </div>
                         </div>
@@ -145,9 +147,9 @@
                   <label class="form-label">Cultivo</label>
                   <select id="fieldCrop" class="form-control" style="width: 100%" data-allow-clear="true">
                     <option></option>
-                    <option value="0">Alfalfa</option>
-                    <option value="1">Maíz</option>
-                    <option value="2">Otro</option>
+                    <option th:each="crop : ${crops}" th:value="${crop.id}"
+                      th:text="${crop.name}">
+                    </option>
                   </select>
                 </div>
               </div>

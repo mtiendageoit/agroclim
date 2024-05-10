@@ -42,10 +42,27 @@ public class FieldService {
   }
 
   public Field putGeometry(String uuid, FieldDto input) {
-    Field field = repository.findByUuid(uuid)
-        .orElseThrow(() -> new NotFoundException("field-not-found", "Field not found"));
+    Field field = fieldByUuid(uuid);
     field.setWkt(input.getWkt());
     return repository.save(field);
+  }
+
+  public Field update(String uuid, FieldDto input) {
+    Field field = fieldByUuid(uuid);
+
+    field.setName(input.getName());
+    field.setCropId(input.getCropId());
+    field.setPlantingDate(input.getPlantingDate());
+    field.setHarvestDate(input.getHarvestDate());
+    field.setBorderColor(input.getBorderColor());
+    field.setBorderSize(input.getBorderSize());
+
+    return repository.save(field);
+  }
+
+  private Field fieldByUuid(String uuid) {
+    return repository.findByUuid(uuid)
+        .orElseThrow(() -> new NotFoundException("field-not-found", "Field not found"));
   }
 
 }

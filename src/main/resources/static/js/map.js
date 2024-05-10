@@ -1,6 +1,6 @@
-let olMap;
-let ModifyInteraction;
 const OlMap = ((element) => {
+  let olMap;
+  let ModifyInteraction;
 
   const wktFormatter = new ol.format.WKT();
   const MapOptions = {
@@ -45,6 +45,21 @@ const OlMap = ((element) => {
 
   element.removeDrawedField = () => {
     removeFeatureById('last-field-drawed');
+  }
+
+  element.fieldByUuid = (uuid) => {
+    const feature = FieldsSource.getFeatureById(uuid);
+    if (feature) {
+      return feature.get('field');
+    }
+  }
+
+  element.updateFeatureField = (field) => {
+    const feature = FieldsSource.getFeatureById(field.uuid);
+    if (feature) {
+      feature.set('field', field);
+      feature.setStyle(strokeStyle(field.borderColor, field.borderSize));
+    }
   }
 
   element.activateModifyField = (uuid) => {

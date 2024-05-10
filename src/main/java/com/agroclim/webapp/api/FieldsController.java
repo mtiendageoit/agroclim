@@ -11,6 +11,9 @@ import com.agroclim.webapp.security.*;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @AllArgsConstructor
@@ -22,6 +25,11 @@ public class FieldsController {
   @PostMapping
   public Field create(@Valid @RequestBody FieldDto input, @AuthenticationPrincipal UserPrincipal principal) {
     return service.create(input, principal);
+  }
+
+  @PutMapping("/{uuid}")
+  public Field update(@PathVariable String uuid, @RequestBody FieldDto input) {
+    return service.update(uuid, input);
   }
 
   @GetMapping

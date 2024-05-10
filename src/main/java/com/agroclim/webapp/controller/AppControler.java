@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import com.agroclim.webapp.crop.CropService;
 import com.agroclim.webapp.exception.*;
 import com.agroclim.webapp.security.UserPrincipal;
 import com.agroclim.webapp.user.*;
@@ -17,10 +18,12 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class AppControler {
   private final UserService userService;
+  private final CropService cropService;
 
   @GetMapping("/")
   public String home(@AuthenticationPrincipal UserPrincipal principal, Model model) {
     model.addAttribute("principal", principal);
+    model.addAttribute("crops", cropService.crops());
     return "home";
   }
 
