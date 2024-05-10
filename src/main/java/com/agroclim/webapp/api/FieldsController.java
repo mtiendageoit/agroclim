@@ -34,4 +34,9 @@ public class FieldsController {
   public void delete(@PathVariable String uuid) {
     service.delete(uuid);
   }
+
+  @PutMapping("/{uuid}/geometry")
+  public Field putGeometry(@PathVariable String uuid, @RequestBody FieldDto input) {
+    return service.putGeometry(uuid, input);
+  }
 }

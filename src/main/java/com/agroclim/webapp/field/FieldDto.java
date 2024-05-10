@@ -9,7 +9,6 @@ import lombok.Data;
 
 @Data
 public class FieldDto {
-  @NotBlank
   private String name;
 
   private Integer cropId;
@@ -20,14 +19,10 @@ public class FieldDto {
   @JsonFormat(pattern = "dd/MM/yyyy")
   private Date harvestDate;
 
-  @NotBlank
   private String borderColor;
 
-  @NotNull
   @Min(1)
-  @Max(5)
   private Integer borderSize;
 
-  @NotBlank
   private String wkt;
 }

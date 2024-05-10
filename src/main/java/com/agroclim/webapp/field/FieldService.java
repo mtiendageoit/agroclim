@@ -5,6 +5,7 @@ import java.util.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.agroclim.webapp.exception.NotFoundException;
 import com.agroclim.webapp.security.UserPrincipal;
 
 import lombok.AllArgsConstructor;
@@ -38,6 +39,13 @@ public class FieldService {
   @Transactional
   public void delete(String uuid) {
     repository.deleteByUuid(uuid);
+  }
+
+  public Field putGeometry(String uuid, FieldDto input) {
+    Field field = repository.findByUuid(uuid)
+        .orElseThrow(() -> new NotFoundException("field-not-found", "Field not found"));
+    field.setWkt(input.getWkt());
+    return repository.save(field);
   }
 
 }

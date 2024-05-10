@@ -1,5 +1,7 @@
 let olMap;
+let ModifyInteraction;
 const OlMap = ((element) => {
+
   const wktFormatter = new ol.format.WKT();
   const MapOptions = {
     center: [-11259661.941042908, 2703071.965672053],
@@ -17,6 +19,7 @@ const OlMap = ((element) => {
     source: FieldsSource,
     type: 'Polygon',
   });
+
 
   function init() {
     olMap = new ol.Map({
@@ -44,6 +47,64 @@ const OlMap = ((element) => {
     removeFeatureById('last-field-drawed');
   }
 
+  element.activateModifyField = (uuid) => {
+    const feature = FieldsSource.getFeatureById(uuid);
+    if (feature) {
+      feature.setStyle(editStyle());
+      const features = new ol.Collection();
+      features.push(feature);
+
+      if (!ModifyInteraction) {
+        ModifyInteraction = new ol.interaction.Modify({
+          features: features
+        });
+        olMap.addInteraction(ModifyInteraction);
+      }
+    }
+  }
+
+  element.cancelModifyField = () => {
+    if (ModifyInteraction) {
+      const feature = ModifyInteraction.features_.array_[0];
+      if (feature) {
+        const field = feature.get('field');
+        feature.setGeometry(wktToGeometry(field.wkt))
+        feature.setStyle(strokeStyle(field.borderColor, field.borderSize));
+        if (ModifyInteraction) {
+          olMap.removeInteraction(ModifyInteraction);
+          ModifyInteraction = null;
+        }
+      }
+    }
+  }
+
+  element.getModifiedField = () => {
+    if (ModifyInteraction) {
+      const feature = ModifyInteraction.features_.array_[0];
+      const field = feature.get('field');
+      field.wkt = geometryToWKT(feature.getGeometry());
+      return field;
+    }
+  }
+
+  function editStyle() {
+    return [new ol.style.Style({
+      fill: new ol.style.Fill({
+        color: [255, 255, 255, 0.05],
+      }),
+    }), new ol.style.Style({
+      stroke: new ol.style.Stroke({
+        color: [255, 255, 255, 1],
+        width: 5,
+      }),
+    }), new ol.style.Style({
+      stroke: new ol.style.Stroke({
+        color: [0, 153, 255, 1],
+        width: 3,
+      }),
+    })];
+  }
+
   function removeFeatureById(uuid) {
     const feature = FieldsSource.getFeatureById(uuid);
     if (feature) {
@@ -64,6 +125,7 @@ const OlMap = ((element) => {
   element.goToFeature = (uuid) => {
     const feature = FieldsSource.getFeatureById(uuid);
     olMap.getView().fit(feature.getGeometry());
+    olMap.getView().setZoom(olMap.getView().getZoom() - 0.5);
   };
 
   element.drawedWkt = () => {
@@ -89,6 +151,10 @@ const OlMap = ((element) => {
 
   function wktToFeature(wkt) {
     return wktFormatter.readFeature(wkt);
+  };
+
+  function wktToGeometry(wkt) {
+    return wktFormatter.readGeometry(wkt);
   };
 
   function strokeStyle(borderColor, borderSize) {

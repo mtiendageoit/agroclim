@@ -8,6 +8,18 @@ const Fields = ((element) => {
     $('#deleteFieldModal').data('uuid', uuid).modal('show');
   };
 
+  element.editGeometry = (uuid) => {
+    OlMap.goToFeature(uuid);
+    OlMap.activateModifyField(uuid);
+
+    showEditGeometryTools(true);
+  }
+
+  function showEditGeometryTools(visible) {
+    if (visible) $('#editFieldGeometryTools').hide().slideDown('fast');
+    else $('#editFieldGeometryTools').show().slideUp('fast');
+  }
+
   function init() {
     initUI();
     getUserFields();
@@ -39,6 +51,41 @@ const Fields = ((element) => {
     $('#fmsCancelBtn').click(cancelSaveField);
     $('#drawNewFieldMenu').click(activateDrawField);
     $('#deleteFieldForm').submit(onDeleteFieldFormSubmit);
+
+    $('#cancelFieldGeometry').click(onCancelFieldGeometry);
+    $('#saveFieldGeometry').click(onSaveFieldGeometry);
+  }
+
+  function onSaveFieldGeometry() {
+    const field = OlMap.getModifiedField();
+    if (field) {
+      disableButton($('#cancelFieldGeometry'));
+      disableButton($('#saveFieldGeometry'), true);
+
+      $.post({
+        method: 'PUT',
+        url: `api/fields/${field.uuid}/geometry`,
+        contentType: 'application/json'
+      }, JSON.stringify(field)).done((field) => {
+        onCancelFieldGeometry();
+        OlMap.removeField(field.uuid);
+        OlMap.addField(field);
+        toastr.success(`Los límites del lote han sido actualizados.`);
+      }).fail((error) => {
+        const code = error.responseJSON.code;
+        if (code === 'field-not-found') {
+          return toastr.warning(`El lote ya no existe, actualice su página.`);
+        }
+        toastr.warning(`Ocurrio un error al ejecutar la acción, intente nuevamente más tarde.`);
+      }).always(() => {
+        enableButton($('#saveFieldGeometry,#cancelFieldGeometry'));
+      });
+    }
+  }
+
+  function onCancelFieldGeometry() {
+    OlMap.cancelModifyField();
+    showEditGeometryTools(false);
   }
 
   function cancelSaveField() {
@@ -172,7 +219,7 @@ const Fields = ((element) => {
                 <i class="fas fa-pencil-alt"></i>&nbsp; Editar
               </div>
               <div class="dropdown-menu" style="margin-left:-1px;">
-                <a class="dropdown-item" href="javascript:void(0)">
+                <a class="dropdown-item" onclick="Fields.editGeometry('${field.uuid}')" href="javascript:void(0)">
                   <i class="fas fa-vector-square"></i>&nbsp; Límites
                 </a>
                 <a class="dropdown-item" href="javascript:void(0)">
