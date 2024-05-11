@@ -16,6 +16,7 @@
 
   <!-- Icon fonts -->
   <link rel="stylesheet" href="vendor/fonts/fontawesome.css">
+  <link rel="stylesheet" href="vendor/fonts/ionicons.css">
 
   <!-- Core stylesheets -->
   <link rel="stylesheet" href="vendor/css/rtl/bootstrap.css">
@@ -62,7 +63,8 @@
                             <p>Mis lotes</p>
                           </div>
                           <div class="dropright">
-                            <a href="javascript:void(0)" class="nav-link p-0 disabled-on-edit-geometry" data-toggle="dropdown">
+                            <a href="javascript:void(0)" class="nav-link p-0 disabled-on-edit-geometry"
+                              data-toggle="dropdown">
                               <p>+ Nuevo lote</p>
                             </a>
                             <div class="dropdown-menu dropdown-menu-bottom">
@@ -74,9 +76,7 @@
                             </div>
                           </div>
                         </div>
-                        <div id="userFieldsList" style="overflow-y: auto; overflow-x: hidden;">
-
-                        </div>
+                        <div id="userFieldsList" style="overflow-y: auto; overflow-x: hidden;"></div>
                       </div>
                     </div>
                     <div class="flex-grow-0 px-2">
@@ -110,6 +110,45 @@
                     <div class="flex-grow-1 position-relative">
                       <div class="w-100 h-100">
                         <div id="map"></div>
+
+                        <div id="mapTools" class="mr-3"
+                          style="position: fixed; top: 50%; right: 0; transform: translateY(-50%);">
+                          <div class="bg-white rounded border text-white d-flex flex-column" style="gap: 0;">
+                            <button id="zoomInBtn" type="button" title="Acercar"
+                              class="btn btn-sm icon-btn btn-outline-success map-tool-item rounded-top">
+                              <span class="fas fa-plus"></span>
+                            </button>
+                            <button id="zoomOutBtn" type="button" title="Alejar"
+                              class="btn btn-sm icon-btn btn-outline-success map-tool-item">
+                              <span class="fas fa-minus"></span>
+                            </button>
+                            <button id="locationBtn" type="button" title="Mi ubicación"
+                              class="btn btn-sm icon-btn btn-outline-success map-tool-item">
+                              <span class="ion ion-md-locate"></span>
+                            </button>
+                            <button id="measureBtn" type="button" measure="LineString" title="Medir longitud"
+                              class="btn btn-sm icon-btn btn-outline-success map-tool-item">
+                              <span class="fas fa-ruler-horizontal"></span>
+                            </button>
+                            <button id="measureAreaBtn" type="button" measure="Polygon" title="Medir área"
+                              class="btn btn-sm icon-btn btn-outline-success map-tool-item rounded-bottom">
+                              <span class="fas fa-draw-polygon"></span>
+                            </button>
+                          </div>
+                          <div id="measureTypes" style="opacity: 0;">
+                            <div class="bg-white rounded border text-white d-flex flex-column mt-3" style="gap: 0;">
+                              <button id="measureTypeMeters" type="button"
+                                class="btn btn-sm icon-btn btn-outline-success map-tool-item rounded-top active">
+                                m
+                              </button>
+                              <button id="measureTypeKilometers" type="button"
+                                class="btn btn-sm icon-btn btn-outline-success map-tool-item rounded-bottom">
+                                Km
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
                         <div id="editFieldGeometryTools" class="mb-3"
                           style="position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); display: none;">
                           <div class="rounded-pill bg-dark text-center text-white d-flex flex-row p-3">
@@ -145,10 +184,10 @@
               <div class="form-row">
                 <div class="form-group col">
                   <label class="form-label">Cultivo</label>
-                  <select id="fieldCrop" class="form-control" style="width: 100%" data-allow-clear="true" data-placeholder="Selecciona un cultivo">
+                  <select id="fieldCrop" class="form-control" style="width: 100%" data-allow-clear="true"
+                    data-placeholder="Selecciona un cultivo">
                     <option></option>
-                    <option th:each="crop : ${crops}" th:value="${crop.id}"
-                      th:text="${crop.name}">
+                    <option th:each="crop : ${crops}" th:value="${crop.id}" th:text="${crop.name}">
                     </option>
                   </select>
                 </div>
@@ -219,6 +258,7 @@
       </div>
 
       <script src="https://cdn.jsdelivr.net/npm/ol@v9.1.0/dist/ol.js"></script>
+      <script src="https://viglino.github.io/ol-ext/dist/ol-ext.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/geotiff@2.1.3/dist-browser/geotiff.min.js"></script>
       <script src="vendor/libs/popper/popper.js"></script>
       <script src="vendor/js/bootstrap.js"></script>
@@ -228,6 +268,7 @@
       <script src="vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js"></script>
       <script src="js/common.js"></script>
       <script src="js/fields.js"></script>
+      <script src="js/measure.js"></script>
       <script src="js/map.js"></script>
 </body>
 

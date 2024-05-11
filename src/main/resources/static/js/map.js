@@ -1,5 +1,5 @@
+let olMap;
 const OlMap = ((element) => {
-  let olMap;
   let ModifyInteraction;
 
   const wktFormatter = new ol.format.WKT();
@@ -20,11 +20,11 @@ const OlMap = ((element) => {
     type: 'Polygon',
   });
 
-
   function init() {
     olMap = new ol.Map({
-      layers: [RasterLayer, FieldsVectorLayer],
       target: 'map',
+      controls: [],
+      layers: [RasterLayer, FieldsVectorLayer],
       view: new ol.View({
         projection: new ol.proj.Projection({
           code: 'EPSG:3857',
@@ -37,6 +37,57 @@ const OlMap = ((element) => {
 
     DrawInteraction.setActive(false);
     olMap.addInteraction(DrawInteraction);
+
+    initControls();
+
+    Measure.initMeasure(olMap);
+  }
+
+  function initControls() {
+    $('#zoomInBtn').click(() => zoomInOut(true));
+    $('#zoomOutBtn').click(() => zoomInOut(false));
+    $('#locationBtn').click(onLocationClick);
+  }
+
+  function onLocationClick() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const coords = [position.coords.longitude, position.coords.latitude];
+        const center = ol.proj.transform(coords, 'EPSG:4326', 'EPSG:3857');
+        olMap.getView().animate({
+          center: center,
+          duration: 400,
+        });
+
+        pulseFeature(center);
+        setTimeout(() => pulseFeature(center), 400);
+        setTimeout(() => pulseFeature(center), 800);
+      });
+    }
+  }
+
+  function pulseFeature(coord) {
+    var f = new ol.Feature(new ol.geom.Point(coord));
+    f.setStyle(new ol.style.Style({
+      image: new ol.style['Circle']({
+        radius: 20,
+        points: 4,
+        stroke: new ol.style.Stroke({ color: 'white', width: 2 })
+      })
+    }));
+    olMap.animateFeature(f, new ol.featureAnimation.Zoom({
+      fade: ol.easing.easeOut,
+      duration: 2000,
+      easing: ol.easing['easeOut']
+    }));
+  }
+
+  function zoomInOut(isZoomIn) {
+    let zoom = olMap.getView().getZoom();
+    olMap.getView().animate({
+      zoom: (isZoomIn) ? zoom + 1 : zoom - 1,
+      duration: 250
+    });
   }
 
   element.removeField = (uuid) => {

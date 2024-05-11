@@ -247,7 +247,7 @@ const Fields = ((element) => {
 
   function templateFieldUI(field) {
     return `
-        <div id="field-${field.uuid}" class="pl-3 pr-2 py-2 d-flex justify-content-between align-items-center field-list-item">
+        <div id="field-${field.uuid}" class="pl-3 pr-2 py-1 d-flex justify-content-between align-items-center field-list-item">
           <div class="d-flex align-items-center">
             <div onclick="Fields.goToFieldInMap('${field.uuid}')" class="border p-2 rounded bg-dark" style="position: relative;opacity: 95%; cursor:pointer;">
               <i class="fas fa-seedling text-large text-white"></i>

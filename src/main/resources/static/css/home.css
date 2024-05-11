@@ -39,3 +39,25 @@ body,
 .d-flex {
   gap: 0.5rem;
 }
+
+.map-tool-item {
+  font-size: 0.9rem;
+  border: 0;
+  border-radius: 0;
+  outline: none !important;
+}
+
+.map-tool-item:focus {
+  outline: none !important;
+  box-shadow: none;
+}
+
+.map-tool-item:active {
+  background-color: #008655;
+  box-shadow: none;
+}
+
+.icon-btn.btn-sm {
+  width: calc(1.601rem + 2px);
+  line-height: 1.601rem;
+}
