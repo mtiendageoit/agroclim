@@ -56,7 +56,8 @@
                         <h5 class="text-danger">Al eliminar su cuenta, todos los datos serán eliminados. Esta acción no
                           puede ser revertida.
                         </h5>
-                        <button id="deleteAccount" type="input" class="btn btn-danger">Eliminar cuenta</button>
+                        <button id="showDeleteAccountModalBtn" type="input" class="btn btn-danger">Eliminar
+                          cuenta</button>
                       </div>
                     </div>
                   </div>
@@ -77,30 +78,61 @@
             <h5 class="modal-title">Eliminar cuenta</h5>
           </div>
           <div class="modal-body py-4">
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center align-middle">
               <div class="far fa-trash-alt display-3 text-danger"></div>
               <div class="ml-3">
                 <div class="text-big">Si elimina su cuenta, todos los datos relacionados serán borrados definitivamente.
                 </div>
                 <div class="text-danger ml-1 mt-1 mb-3 font-weight-bold">¡Esta acción no puede ser revertida!</div>
                 <div class="form-group">
-                  <label class="form-label" for="deletePhrase">Escriba la palabra <span id="deletePhraseLabel" class="text-danger font-weight-bold">"Eliminar"</span> para poder eliminar su
+                  <label class="form-label" for="deletePhrase">Escriba la palabra <span id="deletePhraseLabel"
+                      class="text-danger font-weight-bold">"Eliminar"</span> para poder eliminar su
                     cuenta</label>
-                  <input id="deletePhrase" type="text" class="form-control" autocomplete="off" maxlength="50" required>
+                  <input id="deletePhraseTxt" type="text" class="form-control" autocomplete="off" maxlength="50"
+                    required>
                 </div>
               </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button id="fmdCancelBtn" type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-            <button id="fmdDeleteBtn" type="submit" class="btn btn-danger">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+            <button id="deleteAccountBtn" type="submit" class="btn btn-danger" disabled>
               Eliminar cuenta
             </button>
           </div>
         </form>
       </div>
     </div>
+
+    <div class="modal fade" id="deleteAccountSuccessModal" data-backdrop="static">
+      <div class="modal-dialog">
+        <form class="modal-content" th:action="@{/logout}">
+          <div class="modal-header">
+            <h5 class="modal-title">Cuenta eliminada</h5>
+          </div>
+          <div class="modal-body py-4">
+            <div class="d-flex align-items-center mb-2">
+              <div class="display-3 text-danger">
+                <i class="far fa-sad-tear d-block"></i>
+              </div>
+              <div class="ml-3">
+                <div class="text-big">Su cuenta se ha eliminado definitivamente.
+                </div>
+                <div class="text-danger ml-1 mt-1 mb-3 font-weight-bold">¡Lamentamos que se vaya, gracias por utilizar
+                  nuestros productos!</div>
+                <h6>Saliendo de la cuenta en: <span id="deleteAccountRedirectTime"></span> segundos.</h6>
+              </div>
+            </div>
+            <div class="text-center">
+              <button class="form-control btn-danger">Aceptar</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
+
+
 
   <th:block layout:fragment="scripts">
     <script th:src="@{/settings/account.js}"></script>

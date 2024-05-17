@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.agroclim.webapp.security.UserPrincipal;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
@@ -18,6 +19,12 @@ public class AccountController {
   public void changePassword(@Valid @RequestBody ChangePasswordDto input,
       @AuthenticationPrincipal UserPrincipal principal) {
     accountService.chagePassword(input, principal);
+  }
+
+  @PostMapping(params = "delete-account")
+  public void deleteAccount(@AuthenticationPrincipal UserPrincipal principal, HttpServletRequest request) {
+    accountService.deleteAccount(principal);
+    request.getSession().invalidate();
   }
 
 }

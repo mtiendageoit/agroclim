@@ -1,4 +1,4 @@
-const AccountPassword = ((element) => {
+const AccountPassword = (() => {
   const currentPassword = $('#currentPassword');
   const newPassword = $('#newPassword');
   const matchPassword = $('#matchPassword');
@@ -49,18 +49,58 @@ const AccountPassword = ((element) => {
 })({});
 
 
-const AccountDelete = ((element) => {
+const AccountDelete = (() => {
   const deletePhrase = 'Eliminar';
   const deletePhraseLabel = $('#deletePhraseLabel');
+  const deletePhraseTxt = $('#deletePhraseTxt');
   const deleteAccountModal = $('#deleteAccountModal');
-  const deleteAccountBtn = $('#deleteAccount');
+  const deleteAccountSuccessModal = $('#deleteAccountSuccessModal');
+  const showDeleteAccountModalBtn = $('#showDeleteAccountModalBtn');
+  const deleteAccountBtn = $('#deleteAccountBtn');
+  const deleteAccountForm = $('#deleteAccountForm');
+  const deleteAccountRedirectTime = $('#deleteAccountRedirectTime');
 
   function init() {
     deletePhraseLabel.text(`"${deletePhrase}"`);
-    deleteAccountBtn.click(onDeleteAccountClick)
+    deletePhraseTxt.keyup(onDeletePhraseTxtKeyup);
+    deleteAccountForm.submit(onDeleteAccountForm);
+    showDeleteAccountModalBtn.click(onShowDeleteAccountBtnClick);
   }
 
-  function onDeleteAccountClick() {
+  function onDeletePhraseTxtKeyup() {
+    const text = deletePhraseTxt.val();
+    deleteAccountBtn.attr('disabled', text !== deletePhrase);
+  }
+
+  function onDeleteAccountForm(e) {
+    e.preventDefault();
+
+    disableButton(deleteAccountBtn, true);
+    $.post(`/api/settings/account?delete-account`).done(() => {
+      deleteAccountModal.modal('hide');
+      deleteAccountSuccessModal.modal('show');
+
+      let seconds = 30;
+      deleteAccountRedirectTime.text(seconds);
+      setInterval(() => {
+        if (seconds <= 0) {
+          location.href = '/';
+        }
+        deleteAccountRedirectTime.text(seconds);
+        seconds = seconds - 1;
+      }, 1000);
+
+    }).fail((error) => {
+      toastr.warning(`Ocurrio un error al ejecutar la acción, intente nuevamente más tarde.`);
+    }).always(() => {
+      enableButton(deleteAccountBtn);
+    });
+
+  }
+
+  function onShowDeleteAccountBtnClick() {
+    deletePhraseTxt.val(null);
+    deleteAccountBtn.attr('disabled', true);
     deleteAccountModal.modal('show');
   }
 
