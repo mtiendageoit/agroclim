@@ -1,19 +1,16 @@
-package com.agroclim.webapp.api;
+package com.agroclim.webapp.field;
 
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.agroclim.webapp.field.*;
 import com.agroclim.webapp.security.*;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @AllArgsConstructor
@@ -46,5 +43,11 @@ public class FieldsController {
   @PutMapping("/{uuid}/geometry")
   public Field putGeometry(@PathVariable String uuid, @RequestBody FieldDto input) {
     return service.putGeometry(uuid, input);
+  }
+
+  @PostMapping("/shapefile")
+  public List<Field> uploadShapefile(@RequestParam MultipartFile file,
+      @AuthenticationPrincipal UserPrincipal principal) {
+    return service.uploadShapefile(file, principal);
   }
 }

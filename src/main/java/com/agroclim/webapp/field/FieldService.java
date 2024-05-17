@@ -4,6 +4,7 @@ import java.util.*;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.agroclim.webapp.exception.NotFoundException;
 import com.agroclim.webapp.security.UserPrincipal;
@@ -15,11 +16,11 @@ import lombok.AllArgsConstructor;
 public class FieldService {
   private final FieldRepository repository;
 
-  public Field create(FieldDto input, UserPrincipal user) {
+  public Field create(FieldDto input, UserPrincipal principal) {
     Field field = Field.builder()
         .uuid(UUID.randomUUID().toString())
         .name(input.getName())
-        .userId(user.getId())
+        .userId(principal.getId())
         .cropId(input.getCropId())
         .plantingDate(input.getPlantingDate())
         .harvestDate(input.getHarvestDate())
@@ -32,8 +33,8 @@ public class FieldService {
     return repository.save(field);
   }
 
-  public List<Field> getAll(UserPrincipal user) {
-    return repository.findAllByUserId(user.getId());
+  public List<Field> getAll(UserPrincipal principal) {
+    return repository.findAllByUserId(principal.getId());
   }
 
   @Transactional
@@ -65,4 +66,7 @@ public class FieldService {
         .orElseThrow(() -> new NotFoundException("field-not-found", "Field not found"));
   }
 
+  public List<Field> uploadShapefile(MultipartFile file, UserPrincipal principal) {
+    return null;
+  }
 }
