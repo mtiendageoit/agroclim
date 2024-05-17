@@ -61,3 +61,14 @@ body,
   width: calc(1.601rem + 2px);
   line-height: 1.601rem;
 }
+
+.menu-item:hover,
+.menu-item.active {
+  border-radius: .5rem;
+  cursor: pointer;
+  background-color: #f2f2f7;
+}
+
+.menu-item.active {
+  font-weight: 500;
+}

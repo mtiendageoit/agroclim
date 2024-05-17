@@ -114,5 +114,4 @@ public class AppControler {
 
     return "change-password-success";
   }
-
 }

@@ -16,7 +16,7 @@ const emptyToNull = (value) => {
 
 const disableButton = (button, loading = false) => {
   if (loading)
-    $(button).append('<span class="spinner-border" role="status" aria-hidden="true"></span>');
+    $(button).append('<span class="ml-2 spinner-border" role="status" aria-hidden="true"></span>');
   $(button).attr('disabled', 'disabled');
   $(button).addClass('disabled');
 };
@@ -26,6 +26,14 @@ const enableButton = (button) => {
   $(button).removeAttr('disabled');
   $(button).removeClass('disabled');
 };
+
+const soloNumeros = (event) => {
+  const tecla = event.key;
+  const esNumero = /[0-9]/.test(tecla);
+  if (!esNumero) {
+    event.preventDefault();
+  }
+}
 
 toastr.options = {
   "closeButton": false,
@@ -45,4 +53,4 @@ toastr.options = {
   "hideMethod": "fadeOut"
 }
 
-!function(a){a.fn.datepicker.dates.es={days:["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"],daysShort:["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"],daysMin:["Do","Lu","Ma","Mi","Ju","Vi","Sa"],months:["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"],monthsShort:["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"],today:"Hoy",monthsTitle:"Meses",clear:"Borrar",weekStart:1,format:"dd/mm/yyyy"}}(jQuery);
+!function (a) { a.fn.datepicker.dates.es = { days: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"], daysShort: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"], daysMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"], months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"], monthsShort: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"], today: "Hoy", monthsTitle: "Meses", clear: "Borrar", weekStart: 1, format: "dd/mm/yyyy" } }(jQuery);
