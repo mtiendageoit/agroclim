@@ -15,3 +15,8 @@
 html:not(.dark-style) .account-settings-links .list-group-item.active {
   background: #f2f2f7 !important;
 }
+
+.dropdown-item:not(.disabled).active,.dropdown-item:not(.disabled):active {
+  background-color: #02BC77 !important;
+  color: white;
+}

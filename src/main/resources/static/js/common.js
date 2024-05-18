@@ -6,6 +6,8 @@ $(function () {
       }
     }
   });
+  
+  $('[data-toggle="tooltip"]').tooltip();
 });
 
 const emptyToNull = (value) => {

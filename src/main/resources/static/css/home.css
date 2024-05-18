@@ -26,7 +26,7 @@ body,
   flex-basis: 18rem !important;
 }
 
-.tooltip {
+/* .tooltip {
   position: relative;
   padding: 3px;
   background: rgba(0, 0, 0, .7);
@@ -34,7 +34,7 @@ body,
   opacity: 1;
   white-space: nowrap;
   font: 10pt sans-serif;
-}
+} */
 
 .d-flex {
   gap: 0.5rem;
@@ -71,4 +71,23 @@ body,
 
 .menu-item.active {
   font-weight: 500;
+}
+
+.menu-btn {
+  background-color: #219653;
+  box-shadow: 0px 2px 4px 2px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+.menu-btn:hover {
+  background-color: #278d53;
+}
+
+.menu-btn:active {
+  color: rgb(228, 228, 228) !important;
+}
+
+.dropdown-item:not(.disabled).active,.dropdown-item:not(.disabled):active {
+  background-color: #02BC77 !important;
+  color: white;
 }
