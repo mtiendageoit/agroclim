@@ -96,6 +96,7 @@ const OlMap = ((element) => {
 
   element.removeDrawedField = () => {
     removeFeatureById('last-field-drawed');
+    OlMapPointerMoveEvent.active(true);
   }
 
   element.fieldByUuid = (uuid) => {
@@ -114,6 +115,8 @@ const OlMap = ((element) => {
   }
 
   element.activateModifyField = (uuid) => {
+    OlMapPointerMoveEvent.active(false);
+
     const feature = FieldsSource.getFeatureById(uuid);
     if (feature) {
       feature.setStyle(editStyle());
@@ -142,6 +145,8 @@ const OlMap = ((element) => {
         }
       }
     }
+
+    OlMapPointerMoveEvent.active(true);
   }
 
   element.getModifiedField = () => {
@@ -151,6 +156,10 @@ const OlMap = ((element) => {
       field.wkt = geometryToWKT(feature.getGeometry());
       return field;
     }
+  }
+
+  element.activeMapEvents = (active) => {
+    OlMapPointerMoveEvent.active(active);
   }
 
   function editStyle() {
@@ -202,11 +211,14 @@ const OlMap = ((element) => {
   };
 
   element.activateDrawField = (onDrawEnd) => {
+    OlMapPointerMoveEvent.active(false);
+
     DrawInteraction.setActive(true);
 
     DrawInteraction.once('drawend', (event) => {
       event.feature.setId('last-field-drawed');
       DrawInteraction.setActive(false);
+      OlMapPointerMoveEvent.active(true);
       if (onDrawEnd) { onDrawEnd(); }
     });
   }
@@ -235,6 +247,112 @@ const OlMap = ((element) => {
     });
   };
 
+
+  init();
+  return element;
+})({});
+
+
+const OlMapPointerMoveEvent = ((element) => {
+  let selectedFeature;
+  let originalFeatureStyle;
+
+  function init() {
+    // element.active(true);
+  }
+
+  element.active = (active) => {
+    if (active) {
+      olMap.on('pointermove', pointerMoveListener);
+    } else {
+      olMap.un('pointermove', pointerMoveListener);
+      olMap.getViewport().style.cursor = '';
+    }
+    OlMapSingleClickEvent.active(active);
+  }
+
+  function pointerMoveListener(e) {
+    if (selectedFeature) {
+      selectedFeature.setStyle(originalFeatureStyle);
+      selectedFeature = null;
+    }
+    olMap.forEachFeatureAtPixel(e.pixel, function (f) {
+      selectedFeature = f;
+      originalFeatureStyle = f.getStyle();
+      f.setStyle(mouseOverFeatureStyle());
+      return true;
+    });
+
+    olMap.getViewport().style.cursor = selectedFeature ? 'pointer' : '';
+  }
+
+  function mouseOverFeatureStyle() {
+    return new ol.style.Style({
+      fill: new ol.style.Fill({
+        color: [255, 255, 255, 0.05],
+      }),
+      stroke: new ol.style.Stroke({
+        color: [255, 255, 255, 1],
+        width: 5,
+      }),
+    })
+  }
+
+  init();
+  return element;
+})({});
+
+
+const OlMapSingleClickEvent = ((element) => {
+  let clickedFeature;
+
+  function init() {
+    element.active(false);
+  }
+
+  element.active = (active) => {
+    if (active) {
+      olMap.on('singleclick', singleClickListener);
+    } else {
+      olMap.un('singleclick', singleClickListener);
+    }
+  }
+
+  function singleClickListener(e) {
+
+    olMap.forEachFeatureAtPixel(e.pixel, function (feature) {
+      OlMapPointerMoveEvent.active(false);
+      element.active(false);
+
+      clickedFeature = feature;
+      feature.setStyle(mouseOverFeatureStyle());
+
+      Fields.processClickOverField(feature.get('field'), feature);
+
+      return true;
+    });
+
+  }
+
+  function mouseOverFeatureStyle() {
+    return new ol.style.Style({
+      fill: new ol.style.FillPattern({
+        pattern: "hatch",
+        ratio: 1,
+        color: "rgba(255, 255, 255, 0.2)",
+        offset: 0,
+        scale: 2,
+        fill: new ol.style.Fill({ color: "rgba(255, 0, 0, 0)" }),
+        size: 5,
+        spacing: 10,
+        angle: 0
+      }),
+      stroke: new ol.style.Stroke({
+        color: [255, 255, 255, 1],
+        width: 5,
+      }),
+    })
+  }
 
   init();
   return element;

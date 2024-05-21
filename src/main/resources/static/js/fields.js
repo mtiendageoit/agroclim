@@ -1,4 +1,51 @@
 const Fields = ((element) => {
+
+  element.processClickOverField = (field, feature) => {
+    const featureCloned = feature.clone();
+    const geometry = featureCloned.getGeometry().transform('EPSG:3857', 'EPSG:4326');
+
+    const coords = geometry.getCoordinates()[0];
+    getImageTiff(coords);
+  }
+
+  function getImageTiff(coords) {
+
+    const nameImg = this.crypto.randomUUID();
+    const body = {
+      coordinates: coords,
+      name: nameImg
+    }
+
+    toastr.success(`Se ha enviado a procesar el indice`);
+
+    return;
+
+    $.ajax({
+      type: "POST",
+      url: "https://us-central1-agroclimb.cloudfunctions.net/ndvi-function",
+      dataType: 'json',
+      contentType: 'application/json',
+      data: JSON.stringify(body),
+      success: function (result, status, xhr) {
+      },
+      error: function (xhr, status, error) {
+        source.sourceInfo_[0].url = `${tiff}/${nameImg}.tif`
+
+        setTimeout(() => {
+          GeoTIFFLayer.setSource(new ol.source.GeoTIFF({
+            sources: [
+              {
+                url: `https://storage.googleapis.com/agroclim-bucket/${nameImg}.tif`,
+                nodata: 0
+              },
+            ],
+          }))
+        }, 1000);
+      }
+    });
+
+  }
+
   element.goToFieldInMap = (uuid) => {
     OlMap.goToFeature(uuid);
   }
@@ -233,6 +280,8 @@ const Fields = ((element) => {
     $.get(`api/fields`, (fields) => {
       $('#userFieldsList').empty();
       fields.forEach(showField);
+
+      OlMap.activeMapEvents(true);
     });
   }
 

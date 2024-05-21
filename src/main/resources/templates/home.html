@@ -108,16 +108,18 @@
                       <div class="w-100 h-100">
                         <div id="map"></div>
                         <div class="mb-3"
-                          style="position:absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 1; ">
+                          style="position:absolute; top: 15px; left: 15px; z-index: 1; ">
                           <div data-toggle="dropdown" aria-expanded="true">
                             <div class="rounded-pill text-center text-white px-4 pt-2 pb-1 d-flex menu-btn">
-                              <!-- <i class="ion ion-md-checkmark"></i> -->
-                              <h6 class="my-0 p-0">Ver Índice</h6>
+                              <h6 id="selectedIndiceBtn" indice="" class="my-0 p-0">Ver Índice</h6>
                             </div>
                           </div>
                           <div class="dropdown-menu">
-                            <a href="javascript:void(0)" class="dropdown-item indice" th:attr="indice=${indice.id}"
-                              th:each="indice : ${indices}">[[${indice.name}]]</a>
+                            <a href="javascript:void(0)" class="dropdown-item indice-menu-item"
+                              th:attr="indice=${indice.id},indice-name=${indice.name}" th:each="indice : ${indices}">
+                              <i class="ion ion-md-checkmark mr-1" style="display:none;"></i>
+                              <span>[[${indice.name}]]</span>
+                            </a>
                           </div>
                         </div>
                         <div id="mapTools" class="mr-3"

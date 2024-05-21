@@ -33,9 +33,6 @@ public class User {
   private String password;
 
   @JsonIgnore
-  private String verificationCode;
-
-  @JsonIgnore
   private boolean enabled;
 
   @JsonIgnore
