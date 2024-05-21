@@ -40,7 +40,7 @@ public class AppControler {
 
   @GetMapping("/signup")
   public String signup(Model model) {
-    RegisterUserDto user = new RegisterUserDto("Meliton Tienda Avila", "mtienda@geoit.com.mx", "123456");
+    RegisterUserDto user = new RegisterUserDto();
     model.addAttribute("user", user);
     return "signup";
   }
@@ -51,7 +51,6 @@ public class AppControler {
 
     try {
       String appUrl = request.getContextPath();
-      // appUrl = "http://localhost:8080";
       userService.registerByEmail(input, appUrl);
     } catch (AlreadyExistsException e) {
       model.addAttribute("error", "An account already exists for this email.");
@@ -82,7 +81,6 @@ public class AppControler {
   @PostMapping("/password-reset")
   public String postPasswordReset(String email, HttpServletRequest request) {
     String appUrl = request.getContextPath();
-    // appUrl = "http://localhost:8080";
     userService.resetPassword(email, appUrl);
     return "redirect:/password-reset-success";
   }
