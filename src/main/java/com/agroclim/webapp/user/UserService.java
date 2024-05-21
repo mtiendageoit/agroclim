@@ -73,20 +73,6 @@ public class UserService implements UserDetailsService {
     return repository.save(user);
   }
 
-  public User verifyRegistrationCode(String email, String verificationCode) {
-    User user = repository.findByEmail(email).orElseThrow(() -> new EmailNotFoundException("Email not found"));
-
-    if (!user.getVerificationCode().equals(verificationCode)) {
-      throw new InvalidVerificacionTokenException("Invalid verification code");
-    }
-
-    if (!user.isEnabled()) {
-      user.setEnabled(true);
-      this.save(user);
-    }
-    return user;
-  }
-
   @Override
   public UserDetails loadUserByUsername(String email) {
     User user = repository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Email not found"));
