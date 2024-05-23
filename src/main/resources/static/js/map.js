@@ -348,6 +348,7 @@ const OlMapField = ((element) => {
         getIndiceFieldImage(field, from.imageDate);
       } else {
         //TODO: Alert. No images dates valid fro process images indice
+        // 
         alert('No se encontraron imagenes para este punto de la fecha actual a un año atras');
       }
     });
