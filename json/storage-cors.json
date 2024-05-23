@@ -1,0 +1,8 @@
+[
+  {
+    "origin": ["http://localhost:8080","https://agroclimapp.azurewebsites.net"],
+    "responseHeader": ["Content-Type"],
+    "method": ["GET"],
+    "maxAgeSeconds": 3600
+  }
+]

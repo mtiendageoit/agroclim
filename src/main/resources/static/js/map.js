@@ -12,26 +12,8 @@ const OlMap = ((element) => {
     source: new ol.source.TileImage({ url: 'https://mt0.google.com/vt/lyrs=y&hl=sp&x={x}&y={y}&z={z}' })
   });
 
-
-  const GeoTiffSource = new ol.source.GeoTIFF({
-    sources: [{
-      url: `${App.ImagesUrl}/c9883a89-924d-4d1a-bb83-ee492d42038b.tif`,
-      nodata: 0
-    }]
-  });
-  const GeoTIFFLayer = new ol.layer.WebGLTile({ source: GeoTiffSource });
-
-
-  const GeoTiffSource1 = new ol.source.GeoTIFF({
-    sources: [{
-      url: `${App.ImagesUrl}/339cd1f6-8997-48f0-b39a-d97d28a20f04.tif`,
-      nodata: 0
-    }]
-  });
-  const GeoTIFFLayer1 = new ol.layer.WebGLTile({ source: GeoTiffSource1 });
-
   const FieldsSource = new ol.source.Vector({ wrapX: false })
-  const FieldsVectorLayer = new ol.layer.Vector({ source: FieldsSource });
+  const FieldsVectorLayer = new ol.layer.Vector({ source: FieldsSource, zIndex: 1 });
 
   const DrawInteraction = new ol.interaction.Draw({
     source: FieldsSource,
@@ -42,7 +24,7 @@ const OlMap = ((element) => {
     olMap = new ol.Map({
       target: 'map',
       controls: [],
-      layers: [RasterLayer, FieldsVectorLayer, GeoTIFFLayer,GeoTIFFLayer1],
+      layers: [RasterLayer, FieldsVectorLayer],
       view: new ol.View({
         projection: new ol.proj.Projection({
           code: 'EPSG:3857',
@@ -324,65 +306,16 @@ const OlMapField = ((element) => {
 
     if (features) {
       const feature = features[0];
-      feature.setStyle(processingFieldStyle());
-      element.activeMouseEvents(false);
-
-      getFieldImageDates(feature.get('field'));
-    }
-  }
-
-  function getFieldImageDates(field) {
-    const url = `api/fields/${field.uuid}/images-dates`;
-    $.get(url, (dates) => {
-      const imageDate = getClosesImageDateToNow(dates);
-
-      if (imageDate) {
-        // TODO: Select date in calendar and send to process
-        getFieldIndiceImage(field.uuid, imageDate.image_date);
-      } else {
-        //TODO: Alert. No images dates valid fro process images indice
-      }
-    });
-  }
-
-  function getFieldIndiceImage(uuid, from) {
-    const indice = Indices.selectedIndice();
-
-    const url = `api/fields/${uuid}/image?indice=${indice}&from=${from}`;
-
-    $.post(url).done((image) => {
-      console.log(image);
-    }).fail(() => {
-      toastr.warning(`Ocurrio un error al ejecutar la acción, intente nuevamente más tarde.`);
-    }).always(() => {
-
-    });
-  }
-
-  function getClosesImageDateToNow(dates) {
-    for (let i = 0; i < dates.length; i++) {
-      const date = dates[i];
-
-      if (date.cloudy_percentage <= 20) {
-        return date;
+      if (feature) {
+        element.activeMouseEvents(false);
+        setBusyFieldStyle(feature);
+        getFieldImageDates(feature.get('field'));
       }
     }
   }
 
-  function mouseOverFeatureStyle() {
-    return new ol.style.Style({
-      fill: new ol.style.Fill({
-        color: [255, 255, 255, 0.05],
-      }),
-      stroke: new ol.style.Stroke({
-        color: [255, 255, 255, 1],
-        width: 5,
-      }),
-    })
-  }
-
-  function processingFieldStyle() {
-    return new ol.style.Style({
+  function setBusyFieldStyle(feature) {
+    const style = new ol.style.Style({
       fill: new ol.style.FillPattern({
         pattern: "hatch",
         ratio: 1,
@@ -393,6 +326,92 @@ const OlMapField = ((element) => {
         size: 5,
         spacing: 10,
         angle: 0
+      }),
+      stroke: new ol.style.Stroke({
+        color: [255, 255, 255, 1],
+        width: 5,
+      }),
+    })
+
+    feature.setStyle(style);
+    return feature;
+  }
+
+  function getFieldImageDates(field) {
+    removeFieldImage(field);
+
+    const url = `api/fields/${field.uuid}/images-dates`;
+    $.get(url, (dates) => {
+      const from = getClosesImageDateToNow(dates);
+      if (from) {
+        getIndiceFieldImage(field, from.imageDate);
+      } else {
+        //TODO: Alert. No images dates valid fro process images indice
+        alert('No se encontraron imagenes para este punto de la fecha actual a un año atras');
+      }
+    });
+  }
+
+  function getIndiceFieldImage(field, from) {
+    const indice = Indices.selectedIndice();
+
+    const url = `api/fields/${field.uuid}/image?indice=${indice}&from=${from}`;
+
+    $.post(url).done((image) => {
+      addFieldImageToMap(field, image);
+    }).fail(() => {
+      toastr.warning(`Ocurrio un error al ejecutar la acción, intente nuevamente más tarde.`);
+    }).always(() => {
+      resetFieldStyle(field);
+      element.activeMouseEvents(true);
+    });
+  }
+
+  function removeFieldImage(field) {
+    const layer = olMap.getAllLayers().find(layer => layer.get('field')?.uuid == field.uuid);
+    if (layer) {
+      olMap.removeLayer(layer);
+    }
+  }
+
+  function resetFieldStyle(field) {
+    OlMap.updateFeatureField(field);
+  }
+
+  function addFieldImageToMap(field, image) {
+    const layer = geoTiffLayerFrom(field, image);
+    olMap.addLayer(layer);
+  }
+
+  function geoTiffLayerFrom(field, image) {
+    const source = new ol.source.GeoTIFF({
+      sources: [{
+        url: `${App.ImagesUrl}/${image.uuid}.tif`,
+        nodata: 0
+      }]
+    });
+
+    const layer = new ol.layer.WebGLTile({ source: source });
+    layer.set('field', field);
+    layer.set('image', image);
+
+    return layer;
+  }
+
+  function getClosesImageDateToNow(dates) {
+    for (let i = 0; i < dates.length; i++) {
+      const date = dates[i];
+
+      if (date.cloudyPercentage <= 20) {
+        return date;
+      }
+    }
+  }
+
+  function mouseOverFeatureStyle() {
+    return new ol.style.Style({
+      fill: new ol.style.Fill({
+        color: [255, 255, 255, 0.05],
       }),
       stroke: new ol.style.Stroke({
         color: [255, 255, 255, 1],
