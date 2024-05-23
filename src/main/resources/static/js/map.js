@@ -315,6 +315,7 @@ const OlMapField = ((element) => {
   }
 
   function setBusyFieldStyle(feature) {
+    Notifications.loading(true);
     const style = new ol.style.Style({
       fill: new ol.style.FillPattern({
         pattern: "hatch",
@@ -359,6 +360,7 @@ const OlMapField = ((element) => {
 
     $.post(url).done((image) => {
       addFieldImageToMap(field, image);
+      Notifications.loading(false);
     }).fail(() => {
       toastr.warning(`Ocurrio un error al ejecutar la acción, intente nuevamente más tarde.`);
     }).always(() => {

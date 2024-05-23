@@ -26,6 +26,11 @@ body,
   flex-basis: 18rem !important;
 }
 
+.spinner-grow-xs {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
 /* .tooltip {
   position: relative;
   padding: 3px;
@@ -87,7 +92,8 @@ body,
   color: rgb(228, 228, 228) !important;
 }
 
-.dropdown-item:not(.disabled).active,.dropdown-item:not(.disabled):active {
+.dropdown-item:not(.disabled).active,
+.dropdown-item:not(.disabled):active {
   background-color: #02BC77 !important;
   color: white;
 }

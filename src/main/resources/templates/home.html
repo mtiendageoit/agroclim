@@ -170,6 +170,28 @@
                             <button id="saveFieldGeometry" class="btn rounded btn-success px-5">Guardar</button>
                           </div>
                         </div>
+
+                        <div id="loadingContainer" class="mb-3"
+                          style="position:absolute; bottom: 0px; left: 50%; transform: translateX(-50%); z-index: 1; display: none;">
+                          <div class="rounded bg-dark text-center text-white d-flex flex-row p-2 align-items-center">
+                            <h5 class="m-0">Procesando</h5>
+                            <span class="d-flex align-items-center">
+                              <div class="spinner-grow spinner-grow-xs text-primary" role="status">
+                                <span class="sr-only">Loading...</span>
+                              </div>
+                              <div class="spinner-grow spinner-grow-xs text-secondary" role="status">
+                                <span class="sr-only">Loading...</span>
+                              </div>
+                              <div class="spinner-grow spinner-grow-xs text-success" role="status">
+                                <span class="sr-only">Loading...</span>
+                              </div>
+                            </span>
+                            <!-- <div class="spinner-border text-success" role="status">
+                              <span class="sr-only">Loading...</span>
+                            </div> -->
+
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -284,6 +306,7 @@
       <script src="js/fields.js"></script>
       <script src="js/measure.js"></script>
       <script src="js/indices.js"></script>
+      <script src="js/notifications.js"></script>
       <script src="js/map.js"></script>
 </body>
 
