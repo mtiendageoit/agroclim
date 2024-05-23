@@ -37,6 +37,8 @@ public class Field {
   private int borderSize;
   private String wkt;
 
+  private int version;
+
   @JsonIgnore
   @Temporal(TemporalType.TIMESTAMP)
   private Date createdAt;

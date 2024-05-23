@@ -1,6 +1,10 @@
 const Fields = ((element) => {
 
-  element.processClickOverField = (field, feature) => {
+  element.processClickOverField = (field, coordinates) => {
+
+
+
+
     const featureCloned = feature.clone();
     const geometry = featureCloned.getGeometry().transform('EPSG:3857', 'EPSG:4326');
 

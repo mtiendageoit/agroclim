@@ -1,7 +1,10 @@
-const Indices = (() => {
-
+const Indices = ((element) => {
   const indicesBtns = $('.indice-menu-item');
   const selectedIndiceBtn = $('#selectedIndiceBtn');
+
+  element.selectedIndice = () => {
+    return selectedIndiceBtn.attr('indice');
+  }
 
   function init() {
     indicesBtns.click(onIndiceClick);
@@ -33,4 +36,6 @@ const Indices = (() => {
   }
 
   init();
+
+  return element;
 })({});

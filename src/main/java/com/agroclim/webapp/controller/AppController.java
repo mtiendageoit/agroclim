@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import com.agroclim.webapp.config.AppConfig;
 import com.agroclim.webapp.crop.CropService;
 import com.agroclim.webapp.exception.*;
 import com.agroclim.webapp.indices.*;
@@ -17,7 +18,8 @@ import lombok.AllArgsConstructor;
 
 @Controller
 @AllArgsConstructor
-public class AppControler {
+public class AppController {
+  private final AppConfig config;
   private final UserService userService;
   private final CropService cropService;
   private final IndiceService indiceService;
@@ -27,6 +29,7 @@ public class AppControler {
     model.addAttribute("principal", principal);
     model.addAttribute("crops", cropService.crops());
     model.addAttribute("indices", indiceService.indices());
+    model.addAttribute("imagesUrl", config.getGoogleCloudStorageImagesUrl());
     return "home";
   }
 

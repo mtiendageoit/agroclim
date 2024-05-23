@@ -13,4 +13,5 @@ public class Indice {
 
   private String name;
   private String description;
+  private String url;
 }

@@ -12,6 +12,24 @@ const OlMap = ((element) => {
     source: new ol.source.TileImage({ url: 'https://mt0.google.com/vt/lyrs=y&hl=sp&x={x}&y={y}&z={z}' })
   });
 
+
+  const GeoTiffSource = new ol.source.GeoTIFF({
+    sources: [{
+      url: `${App.ImagesUrl}/c9883a89-924d-4d1a-bb83-ee492d42038b.tif`,
+      nodata: 0
+    }]
+  });
+  const GeoTIFFLayer = new ol.layer.WebGLTile({ source: GeoTiffSource });
+
+
+  const GeoTiffSource1 = new ol.source.GeoTIFF({
+    sources: [{
+      url: `${App.ImagesUrl}/339cd1f6-8997-48f0-b39a-d97d28a20f04.tif`,
+      nodata: 0
+    }]
+  });
+  const GeoTIFFLayer1 = new ol.layer.WebGLTile({ source: GeoTiffSource1 });
+
   const FieldsSource = new ol.source.Vector({ wrapX: false })
   const FieldsVectorLayer = new ol.layer.Vector({ source: FieldsSource });
 
@@ -24,7 +42,7 @@ const OlMap = ((element) => {
     olMap = new ol.Map({
       target: 'map',
       controls: [],
-      layers: [RasterLayer, FieldsVectorLayer],
+      layers: [RasterLayer, FieldsVectorLayer, GeoTIFFLayer,GeoTIFFLayer1],
       view: new ol.View({
         projection: new ol.proj.Projection({
           code: 'EPSG:3857',
@@ -96,7 +114,7 @@ const OlMap = ((element) => {
 
   element.removeDrawedField = () => {
     removeFeatureById('last-field-drawed');
-    OlMapPointerMoveEvent.active(true);
+    OlMapField.activeMouseEvents(true);
   }
 
   element.fieldByUuid = (uuid) => {
@@ -115,7 +133,7 @@ const OlMap = ((element) => {
   }
 
   element.activateModifyField = (uuid) => {
-    OlMapPointerMoveEvent.active(false);
+    OlMapField.activeMouseEvents(false);
 
     const feature = FieldsSource.getFeatureById(uuid);
     if (feature) {
@@ -146,7 +164,7 @@ const OlMap = ((element) => {
       }
     }
 
-    OlMapPointerMoveEvent.active(true);
+    OlMapField.activeMouseEvents(true);
   }
 
   element.getModifiedField = () => {
@@ -159,7 +177,7 @@ const OlMap = ((element) => {
   }
 
   element.activeMapEvents = (active) => {
-    OlMapPointerMoveEvent.active(active);
+    OlMapField.activeMouseEvents(active);
   }
 
   function editStyle() {
@@ -211,28 +229,32 @@ const OlMap = ((element) => {
   };
 
   element.activateDrawField = (onDrawEnd) => {
-    OlMapPointerMoveEvent.active(false);
+    OlMapField.activeMouseEvents(false);
 
     DrawInteraction.setActive(true);
 
     DrawInteraction.once('drawend', (event) => {
       event.feature.setId('last-field-drawed');
       DrawInteraction.setActive(false);
-      OlMapPointerMoveEvent.active(true);
       if (onDrawEnd) { onDrawEnd(); }
     });
   }
 
   function geometryToWKT(geometry) {
-    return wktFormatter.writeGeometry(geometry);
+    const clone = geometry.clone();
+    clone.transform('EPSG:3857', 'EPSG:4326');
+    return wktFormatter.writeGeometry(clone);
   }
 
   function wktToFeature(wkt) {
-    return wktFormatter.readFeature(wkt);
+    const feature = wktFormatter.readFeature(wkt);
+    feature.getGeometry().transform('EPSG:4326', 'EPSG:3857');
+    return feature;
   };
 
   function wktToGeometry(wkt) {
-    return wktFormatter.readGeometry(wkt);
+    const geometry = wktFormatter.readGeometry(wkt);
+    return geometry.transform('EPSG:4326', 'EPSG:3857');
   };
 
   function strokeStyle(borderColor, borderSize) {
@@ -252,38 +274,99 @@ const OlMap = ((element) => {
   return element;
 })({});
 
+const OlMapField = ((element) => {
+  let mouseOverFeature;
+  let originalMouseOverFeatureStyle;
 
-const OlMapPointerMoveEvent = ((element) => {
-  let selectedFeature;
-  let originalFeatureStyle;
+  element.activeMouseEvents = (active) => {
+    activeSingleClick(active);
+    activePointerMove(active);
 
-  function init() {
-    // element.active(true);
+    olMap.getViewport().style.cursor = active ? 'pointer' : '';
   }
 
-  element.active = (active) => {
+  function activePointerMove(active) {
     if (active) {
       olMap.on('pointermove', pointerMoveListener);
     } else {
       olMap.un('pointermove', pointerMoveListener);
-      olMap.getViewport().style.cursor = '';
     }
-    OlMapSingleClickEvent.active(active);
   }
 
-  function pointerMoveListener(e) {
-    if (selectedFeature) {
-      selectedFeature.setStyle(originalFeatureStyle);
-      selectedFeature = null;
+  function pointerMoveListener(evt) {
+    if (mouseOverFeature) {
+      mouseOverFeature.setStyle(originalMouseOverFeatureStyle);
+      mouseOverFeature = null;
     }
-    olMap.forEachFeatureAtPixel(e.pixel, function (f) {
-      selectedFeature = f;
-      originalFeatureStyle = f.getStyle();
-      f.setStyle(mouseOverFeatureStyle());
+
+    olMap.forEachFeatureAtPixel(evt.pixel, function (feature) {
+      mouseOverFeature = feature;
+      originalMouseOverFeatureStyle = feature.getStyle();
+      feature.setStyle(mouseOverFeatureStyle());
       return true;
     });
 
-    olMap.getViewport().style.cursor = selectedFeature ? 'pointer' : '';
+    olMap.getViewport().style.cursor = mouseOverFeature ? 'pointer' : '';
+  }
+
+  function activeSingleClick(active) {
+    if (active) {
+      olMap.on('singleclick', singleClickListener);
+    } else {
+      olMap.un('singleclick', singleClickListener);
+    }
+  }
+
+  function singleClickListener(evt) {
+    const features = olMap.getFeaturesAtPixel(evt.pixel, {
+      hitTolerance: 10
+    });
+
+    if (features) {
+      const feature = features[0];
+      feature.setStyle(processingFieldStyle());
+      element.activeMouseEvents(false);
+
+      getFieldImageDates(feature.get('field'));
+    }
+  }
+
+  function getFieldImageDates(field) {
+    const url = `api/fields/${field.uuid}/images-dates`;
+    $.get(url, (dates) => {
+      const imageDate = getClosesImageDateToNow(dates);
+
+      if (imageDate) {
+        // TODO: Select date in calendar and send to process
+        getFieldIndiceImage(field.uuid, imageDate.image_date);
+      } else {
+        //TODO: Alert. No images dates valid fro process images indice
+      }
+    });
+  }
+
+  function getFieldIndiceImage(uuid, from) {
+    const indice = Indices.selectedIndice();
+
+    const url = `api/fields/${uuid}/image?indice=${indice}&from=${from}`;
+
+    $.post(url).done((image) => {
+      console.log(image);
+    }).fail(() => {
+      toastr.warning(`Ocurrio un error al ejecutar la acción, intente nuevamente más tarde.`);
+    }).always(() => {
+
+    });
+  }
+
+  function getClosesImageDateToNow(dates) {
+    for (let i = 0; i < dates.length; i++) {
+      const date = dates[i];
+
+      if (date.cloudy_percentage <= 20) {
+        return date;
+      }
+    }
   }
 
   function mouseOverFeatureStyle() {
@@ -298,43 +381,7 @@ const OlMapPointerMoveEvent = ((element) => {
     })
   }
 
-  init();
-  return element;
-})({});
-
-
-const OlMapSingleClickEvent = ((element) => {
-  let clickedFeature;
-
-  function init() {
-    element.active(false);
-  }
-
-  element.active = (active) => {
-    if (active) {
-      olMap.on('singleclick', singleClickListener);
-    } else {
-      olMap.un('singleclick', singleClickListener);
-    }
-  }
-
-  function singleClickListener(e) {
-
-    olMap.forEachFeatureAtPixel(e.pixel, function (feature) {
-      OlMapPointerMoveEvent.active(false);
-      element.active(false);
-
-      clickedFeature = feature;
-      feature.setStyle(mouseOverFeatureStyle());
-
-      Fields.processClickOverField(feature.get('field'), feature);
-
-      return true;
-    });
-
-  }
-
-  function mouseOverFeatureStyle() {
+  function processingFieldStyle() {
     return new ol.style.Style({
       fill: new ol.style.FillPattern({
         pattern: "hatch",
@@ -354,6 +401,5 @@ const OlMapSingleClickEvent = ((element) => {
     })
   }
 
-  init();
   return element;
 })({});
