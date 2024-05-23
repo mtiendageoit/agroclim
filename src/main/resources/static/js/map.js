@@ -259,6 +259,7 @@ const OlMap = ((element) => {
 const OlMapField = ((element) => {
   let mouseOverFeature;
   let originalMouseOverFeatureStyle;
+  let processImageFeature;
 
   element.activeMouseEvents = (active) => {
     activeSingleClick(active);
@@ -307,38 +308,18 @@ const OlMapField = ((element) => {
     if (features) {
       const feature = features[0];
       if (feature) {
-        element.activeMouseEvents(false);
-        setBusyFieldStyle(feature);
-        getFieldImageDates(feature.get('field'));
+        getImageFor(feature);
       }
     }
   }
 
-  function setBusyFieldStyle(feature) {
+  function getImageFor(feature) {
+    //loading
+    element.activeMouseEvents(false);
     Notifications.loading(true);
-    const style = new ol.style.Style({
-      fill: new ol.style.FillPattern({
-        pattern: "hatch",
-        ratio: 1,
-        color: "rgba(255, 255, 255, 0.2)",
-        offset: 0,
-        scale: 2,
-        fill: new ol.style.Fill({ color: "rgba(255, 0, 0, 0)" }),
-        size: 5,
-        spacing: 10,
-        angle: 0
-      }),
-      stroke: new ol.style.Stroke({
-        color: [255, 255, 255, 1],
-        width: 5,
-      }),
-    })
+    OlAnimateLoadingFeature.animate(feature);
 
-    feature.setStyle(style);
-    return feature;
-  }
-
-  function getFieldImageDates(field) {
+    const field = feature.get('field');
     removeFieldImage(field);
 
     const url = `api/fields/${field.uuid}/images-dates`;
@@ -361,11 +342,13 @@ const OlMapField = ((element) => {
 
     $.post(url).done((image) => {
       addFieldImageToMap(field, image);
-      Notifications.loading(false);
     }).fail(() => {
       toastr.warning(`Ocurrio un error al ejecutar la acción, intente nuevamente más tarde.`);
     }).always(() => {
+      OlAnimateLoadingFeature.endAnimation();
+      
       resetFieldStyle(field);
+      Notifications.loading(false);
       element.activeMouseEvents(true);
     });
   }
@@ -376,6 +359,8 @@ const OlMapField = ((element) => {
       olMap.removeLayer(layer);
     }
   }
+
+
 
   function resetFieldStyle(field) {
     OlMap.updateFeatureField(field);
@@ -421,6 +406,52 @@ const OlMapField = ((element) => {
         width: 5,
       }),
     })
+  }
+
+  return element;
+})({});
+
+
+
+
+
+
+const OlAnimateLoadingFeature = ((element) => {
+  let timer, feature;
+
+  element.endAnimation = () => {
+    if (timer) clearInterval(timer);
+  };
+
+  element.animate = (f) => {
+    feature = f;
+    let offset = 0;
+    feature.setStyle(style(offset));
+
+    timer = setInterval(() => {
+      feature.setStyle(style(offset += 0.5));
+    }, 50);
+
+  };
+
+  function style(offset) {
+    return new ol.style.Style({
+      fill: new ol.style.FillPattern({
+        pattern: "hatch",
+        ratio: 1,
+        color: "rgba(255, 255, 255, 0.2)",
+        offset: offset,
+        scale: 2,
+        fill: new ol.style.Fill({ color: "rgba(255, 0, 0, 0)" }),
+        size: 5,
+        spacing: 10,
+        angle: 0
+      }),
+      stroke: new ol.style.Stroke({
+        color: [255, 255, 255, 1],
+        width: 5,
+      }),
+    });
   }
 
   return element;
