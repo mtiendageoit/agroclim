@@ -1,14 +1,25 @@
 const CalendarImages = (function (element) {
   const calendarImages = $('#calendarImages');
+  const container = $('#calendarImagesContainer');
   let currentDates;
+
+  element.showCalendar = (show) => {
+    if (show) container.show();
+    else container.hide();
+  };
 
   element.setDates = (dates) => {
     disabled();
-    if (dates && dates.length > 0) {
+    const hasDates = dates && dates.length > 0;
+
+    if (hasDates) {
       currentDates = dates;
       const startDate = currentDates[currentDates.length - 1].imageDate;
       calendarImages.datepicker('setStartDate', startDate);
     }
+
+    element.showCalendar(hasDates);
+    Indices.showIndices(hasDates);
   };
 
   element.getDate = () => {

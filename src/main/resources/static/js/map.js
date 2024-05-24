@@ -306,9 +306,7 @@ const OlMapField = ((element) => {
   }
 
   function singleClickListener(evt) {
-    const features = olMap.getFeaturesAtPixel(evt.pixel, {
-      hitTolerance: 10
-    });
+    const features = olMap.getFeaturesAtPixel(evt.pixel);
 
     if (features) {
       const feature = features[0];

@@ -1,6 +1,12 @@
 const Indices = ((element) => {
   const indicesBtns = $('.indice-menu-item');
   const selectedIndiceBtn = $('#selectedIndiceBtn');
+  const container = $('#indicesListContainer');
+
+  element.showIndices = (show) => {
+    if (show) container.show();
+    else container.hide();
+  };
 
   element.selectedIndice = () => {
     return selectedIndiceBtn.attr('indice');
