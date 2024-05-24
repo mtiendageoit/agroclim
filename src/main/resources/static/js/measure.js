@@ -48,6 +48,9 @@ const Measure = (function (element) {
       $('#measureTypes').css('opacity', 0);
       element.remove();
     }
+
+
+    OlMapField.activeMouseEvents(!active);
   }
 
   element.isActive = () => {
@@ -284,6 +287,7 @@ const Measure = (function (element) {
   }
 
   const vector = new ol.layer.Vector({
+    zIndex: 2,
     source: source,
     type: measureLayerType,
     style: function (feature) {
