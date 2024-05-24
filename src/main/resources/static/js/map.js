@@ -257,9 +257,14 @@ const OlMap = ((element) => {
 })({});
 
 const OlMapField = ((element) => {
+  let processFeature;
   let mouseOverFeature;
   let originalMouseOverFeatureStyle;
-  let processImageFeature;
+  const imageLayer = new ol.layer.WebGLTile({ source: null });
+
+  function init() {
+    olMap.addLayer(imageLayer);
+  };
 
   element.activeMouseEvents = (active) => {
     activeSingleClick(active);
@@ -308,65 +313,77 @@ const OlMapField = ((element) => {
     if (features) {
       const feature = features[0];
       if (feature) {
-        getImageFor(feature);
+        processFeature = feature;
+        getDatesForFieldImages();
       }
     }
   }
 
-  function getImageFor(feature) {
-    //loading
-    element.activeMouseEvents(false);
-    Notifications.loading(true);
-    OlAnimateLoadingFeature.animate(feature);
+  function getDatesForFieldImages() {
+    removeFieldImage();
+    element.loadingUI(true);
 
-    const field = feature.get('field');
-    removeFieldImage(field);
-
+    const field = processFeature.get('field');
     const url = `api/fields/${field.uuid}/images-dates`;
+
     $.get(url, (dates) => {
-      CalendarImages.activeDates(dates, field);
+      CalendarImages.setDates(dates);
       const from = getClosesImageDateToNow(dates);
       if (from) {
-        CalendarImages.activateDate(from.imageDate);
+        CalendarImages.select(from.imageDate);
+        getIndiceImageField();
       }
     });
   }
 
-  element.getIndiceImageField = (field, from) => {
+  element.getImageForSelectedField = () => {
+    if (processFeature) {
+      removeFieldImage();
+      element.loadingUI(true);
+      getIndiceImageField();
+    }
+  };
+
+  function getIndiceImageField() {
+    const from = CalendarImages.getDate();
     const indice = Indices.selectedIndice();
+    const field = processFeature.get('field');
 
     const url = `api/fields/${field.uuid}/image?indice=${indice}&from=${from}`;
 
     $.post(url).done((image) => {
-      addFieldImageToMap(field, image);
+      addFieldImageToMap(image);
     }).fail(() => {
       toastr.warning(`Ocurrio un error al ejecutar la acción, intente nuevamente más tarde.`);
     }).always(() => {
-      OlAnimateLoadingFeature.endAnimation();
-
       resetFieldStyle(field);
-      Notifications.loading(false);
-      element.activeMouseEvents(true);
+      element.loadingUI(false);
     });
   }
 
-  function removeFieldImage(field) {
-    const layer = olMap.getAllLayers().find(layer => layer.get('field')?.uuid == field.uuid);
-    if (layer) {
-      olMap.removeLayer(layer);
+  element.loadingUI = (loading) => {
+    if (processFeature) {
+      if (loading) {
+        element.activeMouseEvents(false);
+        Notifications.loading(true);
+        OlAnimateLoadingFeature.animate(processFeature);
+      } else {
+        element.activeMouseEvents(true);
+        Notifications.loading(false);
+        OlAnimateLoadingFeature.endAnimation();
+      }
     }
+  }
+
+  function removeFieldImage() {
+    imageLayer.setSource(null);
   }
 
   function resetFieldStyle(field) {
     OlMap.updateFeatureField(field);
   }
 
-  function addFieldImageToMap(field, image) {
-    const layer = geoTiffLayerFrom(field, image);
-    olMap.addLayer(layer);
-  }
-
-  function geoTiffLayerFrom(field, image) {
+  function addFieldImageToMap(image) {
     const source = new ol.source.GeoTIFF({
       sources: [{
         url: `${App.ImagesUrl}/${image.uuid}.tif`,
@@ -374,11 +391,7 @@ const OlMapField = ((element) => {
       }]
     });
 
-    const layer = new ol.layer.WebGLTile({ source: source });
-    layer.set('field', field);
-    layer.set('image', image);
-
-    return layer;
+    imageLayer.setSource(source);
   }
 
   function getClosesImageDateToNow(dates) {
@@ -402,6 +415,8 @@ const OlMapField = ((element) => {
       }),
     })
   }
+
+  init();
 
   return element;
 })({});

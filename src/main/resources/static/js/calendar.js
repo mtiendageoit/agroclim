@@ -1,27 +1,22 @@
 const CalendarImages = (function (element) {
   const calendarImages = $('#calendarImages');
   let currentDates;
-  let currentField;
 
-  element.activeDates = (dates, field) => {
+  element.setDates = (dates) => {
     disabled();
     if (dates && dates.length > 0) {
       currentDates = dates;
-      currentField = field;
-
       const startDate = currentDates[currentDates.length - 1].imageDate;
       calendarImages.datepicker('setStartDate', startDate);
     }
   };
 
-  element.activateDate = (date) => {
-    if (currentDates) {
-      const exists = currentDates.find(item => item.imageDate === date);
-      if (exists) {
-        calendarImages.datepicker("setDate", date);
-        OlMapField.getIndiceImageField(currentField, date);
-      }
-    }
+  element.getDate = () => {
+    return formatDate(calendarImages.datepicker('getDate'));
+  };
+
+  element.select = (date) => {
+    calendarImages.datepicker("update", date);
   };
 
   function init() {
@@ -39,7 +34,11 @@ const CalendarImages = (function (element) {
       orientation: 'bottom right',
       container: '#calendarImagesContainer',
       beforeShowDay: beforeShowDay
-    });
+    }).on('changeDate', onChangeDate);
+  }
+
+  function onChangeDate(e) {
+    OlMapField.getImageForSelectedField();
   }
 
   function beforeShowDay(date) {

@@ -33,6 +33,8 @@ const Indices = ((element) => {
   function onIndiceClick() {
     const indice = $(this).attr('indice');
     selectIndice(indice);
+
+    OlMapField.getImageForSelectedField();
   }
 
   init();
