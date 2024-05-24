@@ -1,26 +1,18 @@
 package com.agroclim.webapp.google;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.agroclim.webapp.config.AppConfig;
 import com.agroclim.webapp.field.Field;
 import com.agroclim.webapp.field.images.FieldImageDateDto;
-import com.agroclim.webapp.google.functions.NdviImageRequest;
-import com.agroclim.webapp.google.functions.NdviImageResponse;
+import com.agroclim.webapp.google.functions.*;
 import com.agroclim.webapp.indices.Indice;
 
 import lombok.AllArgsConstructor;
@@ -28,12 +20,12 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class EarthEngineClient {
-  private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+  private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
   private final AppConfig config;
   private final RestTemplate restTemplate;
 
-  public List<FieldImageDateDto> imageDates(Field field, Date from, Date to) {
+  public List<FieldImageDateDto> imageDates(Field field, LocalDate from, LocalDate to) {
     List<List<Double>> coords = coordinatesFromWKT(field.getWkt());
 
     HttpHeaders headers = new HttpHeaders();
@@ -55,13 +47,10 @@ public class EarthEngineClient {
     return response.getBody();
   }
 
-  public String processIndiceImageField(Field field, String imageName, Indice indice, Date imageDate) {
+  public String processIndiceImageField(Field field, String imageName, Indice indice, LocalDate imageDate) {
     List<List<Double>> coords = coordinatesFromWKT(field.getWkt());
 
-    Calendar calendar = Calendar.getInstance();
-    calendar.setTime(imageDate);
-    calendar.add(Calendar.DAY_OF_MONTH, 1);
-    Date to = calendar.getTime();
+    LocalDate to = imageDate.plusDays(1);
 
     NdviImageRequest requestObject = NdviImageRequest.builder()
         .imageName(imageName)

@@ -1,5 +1,6 @@
 package com.agroclim.webapp.field;
 
+import java.time.LocalDate;
 import java.util.*;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -55,7 +56,7 @@ public class FieldsController {
 
   @PostMapping("/{uuid}/image")
   public FieldImage indiceImageField(@PathVariable String uuid, @RequestParam int indice,
-      @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date from) {
+      @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate from) {
     return service.indiceImageField(uuid, indice, from);
   }
 

@@ -1,5 +1,6 @@
 package com.agroclim.webapp.field.images;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -32,7 +33,7 @@ public class FieldImage {
   private int indiceId;
 
   @JsonFormat(pattern = "dd/MM/yyyy")
-  private Date imageDate;
+  private LocalDate imageDate;
 
   @Enumerated(EnumType.STRING)
   private ImageStatus status;

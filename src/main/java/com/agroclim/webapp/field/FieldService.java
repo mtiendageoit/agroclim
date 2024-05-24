@@ -1,5 +1,6 @@
 package com.agroclim.webapp.field;
 
+import java.time.LocalDate;
 import java.util.*;
 
 import org.springframework.stereotype.Service;
@@ -9,8 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.agroclim.webapp.exception.NotFoundException;
 import com.agroclim.webapp.field.images.*;
 import com.agroclim.webapp.google.EarthEngineClient;
-import com.agroclim.webapp.indices.Indice;
-import com.agroclim.webapp.indices.IndiceRepository;
+import com.agroclim.webapp.indices.*;
 import com.agroclim.webapp.security.UserPrincipal;
 import com.agroclim.webapp.utils.RandomCodeGenerator;
 
@@ -82,7 +82,7 @@ public class FieldService {
   }
 
   @Transactional
-  public FieldImage indiceImageField(String uuid, int indiceId, Date from) {
+  public FieldImage indiceImageField(String uuid, int indiceId, LocalDate from) {
     Field field = fieldByUuid(uuid);
     Optional<FieldImage> opt = fieldImageRepository.findByFieldIdAndFieldVersionAndIndiceIdAndImageDate(field.getId(),
         field.getVersion(), indiceId, from);
@@ -115,15 +115,8 @@ public class FieldService {
   public List<FieldImageDateDto> fieldImages(String uuid) {
     Field field = fieldByUuid(uuid);
 
-    Date now = new Date();
-    Calendar calendar = Calendar.getInstance();
-    calendar.setTime(now);
-    calendar.add(Calendar.YEAR, -1);
-    Date from = calendar.getTime();
-
-    calendar.setTime(now);
-    calendar.add(Calendar.DAY_OF_MONTH, 1);
-    Date to = calendar.getTime();
+    LocalDate to = LocalDate.now().plusDays(1);
+    LocalDate from = to.minusYears(1);
 
     List<FieldImageDateDto> images = earthEngineClient.imageDates(field, from, to);
     Collections.sort(images, Comparator.comparing(FieldImageDateDto::getImageDate).reversed());
