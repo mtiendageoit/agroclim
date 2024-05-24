@@ -261,9 +261,16 @@ const OlMapField = ((element) => {
   let mouseOverFeature;
   let originalMouseOverFeatureStyle;
   const imageLayer = new ol.layer.WebGLTile({ source: null });
+  const tooltip = document.getElementById('tooltip');
+  const overlay = new ol.Overlay({
+    element: tooltip,
+    offset: [10, 0],
+    positioning: 'bottom-left'
+  });
 
   function init() {
     olMap.addLayer(imageLayer);
+    olMap.addOverlay(overlay);
   };
 
   element.activeMouseEvents = (active) => {
@@ -295,6 +302,37 @@ const OlMapField = ((element) => {
     });
 
     olMap.getViewport().style.cursor = mouseOverFeature ? 'pointer' : '';
+
+
+    showIndiceToolTip(evt);
+  }
+
+  function showIndiceToolTip(evt) {
+    if (!imageLayer.getSource()) return;
+
+    const data = imageLayer.getData(evt.pixel);
+    if (!data) {
+      tooltip.style.display = 'none';
+      return;
+    }
+
+    console.log(data);
+
+    const red = data[0];
+    const nir = data[1];
+    const ndvi = (nir - red) / (nir + red);
+    console.log(`ndvi: ${ndvi}`);
+
+    const feature = olMap.forEachFeatureAtPixel(evt.pixel, f => {
+      return f.getId() == processFeature.getId() ? f : null;
+    })
+
+    tooltip.style.display = feature ? '' : 'none'
+    if (feature) {
+      overlay.setPosition(evt.coordinate)
+      tooltip.innerHTML = `${parseFloat(ndvi).toFixed(2)}`
+    }
+
   }
 
   function activeSingleClick(active) {
