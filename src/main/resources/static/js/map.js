@@ -324,18 +324,15 @@ const OlMapField = ((element) => {
 
     const url = `api/fields/${field.uuid}/images-dates`;
     $.get(url, (dates) => {
+      CalendarImages.activeDates(dates, field);
       const from = getClosesImageDateToNow(dates);
       if (from) {
-        getIndiceFieldImage(field, from.imageDate);
-      } else {
-        //TODO: Alert. No images dates valid fro process images indice
-        // 
-        alert('No se encontraron imagenes para este punto de la fecha actual a un año atras');
+        CalendarImages.activateDate(from.imageDate);
       }
     });
   }
 
-  function getIndiceFieldImage(field, from) {
+  element.getIndiceImageField = (field, from) => {
     const indice = Indices.selectedIndice();
 
     const url = `api/fields/${field.uuid}/image?indice=${indice}&from=${from}`;
@@ -346,7 +343,7 @@ const OlMapField = ((element) => {
       toastr.warning(`Ocurrio un error al ejecutar la acción, intente nuevamente más tarde.`);
     }).always(() => {
       OlAnimateLoadingFeature.endAnimation();
-      
+
       resetFieldStyle(field);
       Notifications.loading(false);
       element.activeMouseEvents(true);
@@ -359,8 +356,6 @@ const OlMapField = ((element) => {
       olMap.removeLayer(layer);
     }
   }
-
-
 
   function resetFieldStyle(field) {
     OlMap.updateFeatureField(field);

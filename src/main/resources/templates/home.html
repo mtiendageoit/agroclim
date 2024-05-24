@@ -111,6 +111,7 @@
                     <div class="flex-grow-1 position-relative">
                       <div class="w-100 h-100">
                         <div id="map"></div>
+
                         <div class="mb-3" style="position:absolute; top: 15px; left: 15px; z-index: 1; ">
                           <div data-toggle="dropdown" aria-expanded="true">
                             <div class="rounded-pill text-center text-white px-4 pt-2 pb-1 d-flex menu-btn">
@@ -125,6 +126,14 @@
                             </a>
                           </div>
                         </div>
+
+                        <div id="calendarImagesContainer" class="mb-3"
+                          style="position:absolute; top: 15px; right: 15px; z-index: 1;">
+                          <div class="rounded p-2">
+                            <div id="calendarImages" class="rounded bg-white"></div>
+                          </div>
+                        </div>
+
                         <div id="mapTools" class="mr-3"
                           style="position: fixed; top: 50%; right: 0; transform: translateY(-50%);">
                           <div class="bg-white rounded border text-white d-flex flex-column" style="gap: 0;">
@@ -186,10 +195,6 @@
                                 <span class="sr-only">Loading...</span>
                               </div>
                             </span>
-                            <!-- <div class="spinner-border text-success" role="status">
-                              <span class="sr-only">Loading...</span>
-                            </div> -->
-
                           </div>
                         </div>
                       </div>
@@ -302,12 +307,14 @@
       <script src="vendor/libs/minicolors/minicolors.js"></script>
       <script src="vendor/libs/toastr/toastr.js"></script>
       <script src="vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js"></script>
+
       <script src="js/common.js"></script>
-      <script src="js/fields.js"></script>
       <script src="js/measure.js"></script>
+      <script src="js/map.js"></script>
+      <script src="js/fields.js"></script>
       <script src="js/indices.js"></script>
       <script src="js/notifications.js"></script>
-      <script src="js/map.js"></script>
+      <script src="js/calendar.js"></script>
 </body>
 
 </html>
