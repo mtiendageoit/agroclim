@@ -97,3 +97,25 @@ body,
   background-color: #02BC77 !important;
   color: white;
 }
+
+
+.search-btn-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-btn-input-container .search-btn-form-control {
+  width: 100%;
+  padding-right: 30px; /* Make space for the close button */
+}
+
+.search-btn-input-container .search-btn-close {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}

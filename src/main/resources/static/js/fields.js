@@ -1,5 +1,11 @@
 const Fields = ((element) => {
 
+  element.filter = (filterText) => {
+    $('#userFieldsList .field-list-item').filter(function () {
+      $(this).toggle($(this).attr('fieldname').toLowerCase().indexOf(filterText) > -1);
+    });
+  };
+
   element.processClickOverField = (field, coordinates) => {
 
 
@@ -300,7 +306,7 @@ const Fields = ((element) => {
 
   function templateFieldUI(field) {
     return `
-        <div id="field-${field.uuid}" class="pl-3 pr-2 py-1 d-flex justify-content-between align-items-center field-list-item">
+        <div id="field-${field.uuid}" class="pl-3 pr-2 py-1 justify-content-between align-items-center field-list-item" fieldname="${field.name}" style="display:flex">
           <div class="d-flex align-items-center">
             <div onclick="Fields.goToFieldInMap('${field.uuid}')" class="border p-2 rounded bg-dark" style="position: relative;opacity: 95%; cursor:pointer;">
               <i class="fas fa-seedling text-large text-white"></i>
@@ -311,34 +317,34 @@ const Fields = ((element) => {
               <small class="font-weight-normal">datos</small>
             </div>
           </div>
-        <div class="btn-group dropright">
-          <button id="field-ddm-${field.uuid}" type="button"
-            class="btn btn-sm btn-default icon-btn borderless rounded-pill md-btn-flat dropdown-toggle hide-arrow disabled-on-edit-geometry"
-            data-toggle="dropdown" aria-expanded="true" data-boundary="viewport">
-            <i class="fas fa-ellipsis-v"></i>
-          </button>
-          <div class="dropdown-menu" aria-labelledby="field-ddm-${field.uuid}">
-            <a onclick="Fields.goToFieldInMap('${field.uuid}')" class="dropdown-item" href="javascript:void(0)">
-              <i class="fas fa-map-pin"></i>&nbsp; Ubicar en mapa
-            </a>
-            <div class="dropdown-toggle">
-              <div class="dropdown-item">
-                <i class="fas fa-pencil-alt"></i>&nbsp; Editar
+          <div class="btn-group dropright">
+            <button id="field-ddm-${field.uuid}" type="button"
+              class="btn btn-sm btn-default icon-btn borderless rounded-pill md-btn-flat dropdown-toggle hide-arrow disabled-on-edit-geometry"
+              data-toggle="dropdown" aria-expanded="true" data-boundary="viewport">
+              <i class="fas fa-ellipsis-v"></i>
+            </button>
+            <div class="dropdown-menu" aria-labelledby="field-ddm-${field.uuid}">
+              <a onclick="Fields.goToFieldInMap('${field.uuid}')" class="dropdown-item" href="javascript:void(0)">
+                <i class="fas fa-map-pin"></i>&nbsp; Ubicar en mapa
+              </a>
+              <div class="dropdown-toggle">
+                <div class="dropdown-item">
+                  <i class="fas fa-pencil-alt"></i>&nbsp; Editar
+                </div>
+                <div class="dropdown-menu" style="margin-left:-1px;">
+                  <a class="dropdown-item" onclick="Fields.editGeometry('${field.uuid}')" href="javascript:void(0)">
+                    <i class="fas fa-vector-square"></i>&nbsp; Límites
+                  </a>
+                  <a class="dropdown-item" onclick="Fields.editAttributes('${field.uuid}')" href="javascript:void(0)">
+                    <i class="far fa-list-alt"></i>&nbsp; Datos y cultivo
+                  </a>
+                </div>
               </div>
-              <div class="dropdown-menu" style="margin-left:-1px;">
-                <a class="dropdown-item" onclick="Fields.editGeometry('${field.uuid}')" href="javascript:void(0)">
-                  <i class="fas fa-vector-square"></i>&nbsp; Límites
-                </a>
-                <a class="dropdown-item" onclick="Fields.editAttributes('${field.uuid}')" href="javascript:void(0)">
-                  <i class="far fa-list-alt"></i>&nbsp; Datos y cultivo
-                </a>
-              </div>
+              <a onclick="Fields.deleteField('${field.uuid}','${field.name}')" class="dropdown-item" href="javascript:void(0)">
+                <i class="fas fa-trash-alt"></i>&nbsp; Eliminar
+              </a>
             </div>
-            <a onclick="Fields.deleteField('${field.uuid}','${field.name}')" class="dropdown-item" href="javascript:void(0)">
-              <i class="fas fa-trash-alt"></i>&nbsp; Eliminar
-            </a>
           </div>
-        </div>
       </div>
     `;
   }

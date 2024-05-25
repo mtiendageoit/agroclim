@@ -38,6 +38,7 @@
     window.App = {};
     window.App.ImagesUrl = /*[[${imagesUrl}]]*/ null;
   </script>
+
 </head>
 
 <body>
@@ -53,7 +54,12 @@
                     <div class="flex-grow-0 px-3">
                       <div class="media align-items-center">
                         <div class="media-body">
-                          <input type="text" class="form-control chat-search my-3" placeholder="Buscar...">
+                          <div class="search-btn-input-container my-3">
+                            <input id="searchControl" type="text" class="form-control search-btn-form-control chat-search"
+                              placeholder="Buscar..." autocomplete="off">
+                            <button id="cleanSearchBtn" type="button" class="close search-btn-close" data-dismiss="modal"
+                              aria-label="Close">×</button>
+                          </div>
                         </div>
                         <a href="javascript:void(0)"
                           class="chat-sidebox-toggler d-lg-none d-block text-muted text-large font-weight-light pl-3">&times;</a>
@@ -114,10 +120,12 @@
                           <div id="tooltip" class="tooltip"></div>
                         </div>
 
-                        <div id="indicesListContainer" class="mb-3" style="position:absolute; top: 15px; left: 15px; z-index: 1; display: none;">
+                        <div id="indicesListContainer" class="mb-3"
+                          style="position:absolute; top: 15px; left: 15px; z-index: 1; display: none;">
                           <div data-toggle="dropdown" aria-expanded="true">
                             <div class="rounded-pill text-center text-white px-4 py-2 d-flex menu-btn">
-                              <h6 id="selectedIndiceBtn" indice="" class="my-0 p-0" style="line-height: 1;">Ver Índice</h6>
+                              <h6 id="selectedIndiceBtn" indice="" class="my-0 p-0" style="line-height: 1;">Ver Índice
+                              </h6>
                             </div>
                           </div>
                           <div class="dropdown-menu">
@@ -311,6 +319,7 @@
       <script src="vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js"></script>
 
       <script src="js/common.js"></script>
+      <script src="js/home.js"></script>
       <script src="js/measure.js"></script>
       <script src="js/map.js"></script>
       <script src="js/fields.js"></script>
