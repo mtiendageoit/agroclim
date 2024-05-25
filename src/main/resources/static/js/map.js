@@ -316,21 +316,18 @@ const OlMapField = ((element) => {
       return;
     }
 
-    console.log(data);
-
-    const red = data[0];
-    const nir = data[1];
-    const ndvi = (nir - red) / (nir + red);
-    console.log(`ndvi: ${ndvi}`);
-
     const feature = olMap.forEachFeatureAtPixel(evt.pixel, f => {
       return f.getId() == processFeature.getId() ? f : null;
     })
 
     tooltip.style.display = feature ? '' : 'none'
     if (feature) {
+      console.log(`Data: ${data}`);
+      const indiceValue = Indices.getIndiceValueFromPixel(data);
+      console.log(`Valor calculado: ${indiceValue}`);
+      
+      tooltip.innerHTML = `${parseFloat(indiceValue).toFixed(2)}`
       overlay.setPosition(evt.coordinate)
-      tooltip.innerHTML = `${parseFloat(ndvi).toFixed(2)}`
     }
 
   }
