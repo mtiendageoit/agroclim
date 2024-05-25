@@ -325,7 +325,7 @@ const OlMapField = ((element) => {
       console.log(`Data: ${data}`);
       const indiceValue = Indices.getIndiceValueFromPixel(data);
       console.log(`Valor calculado: ${indiceValue}`);
-      
+
       tooltip.innerHTML = `${parseFloat(indiceValue).toFixed(2)}`
       overlay.setPosition(evt.coordinate)
     }
@@ -353,7 +353,7 @@ const OlMapField = ((element) => {
   }
 
   function getDatesForFieldImages() {
-    removeFieldImage();
+    element.removeFieldImage();
     element.loadingUI(true);
 
     const field = processFeature.get('field');
@@ -371,7 +371,7 @@ const OlMapField = ((element) => {
 
   element.getImageForSelectedField = () => {
     if (processFeature) {
-      removeFieldImage();
+      element.removeFieldImage();
       element.loadingUI(true);
       getIndiceImageField();
     }
@@ -408,8 +408,12 @@ const OlMapField = ((element) => {
     }
   }
 
-  function removeFieldImage() {
+  element.removeFieldImage = () => {
     imageLayer.setSource(null);
+  }
+
+  element.setVisibleFieldImage = (visible) => {
+    imageLayer.setVisible(visible);
   }
 
   function resetFieldStyle(field) {

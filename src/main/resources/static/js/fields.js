@@ -66,6 +66,11 @@ const Fields = ((element) => {
   };
 
   element.editGeometry = (uuid) => {
+
+    Indices.showIndices(false);
+    CalendarImages.showCalendar(false);
+    OlMapField.setVisibleFieldImage(false);
+
     OlMap.goToFeature(uuid);
     OlMap.activateModifyField(uuid);
 
@@ -146,9 +151,15 @@ const Fields = ((element) => {
         url: `api/fields/${field.uuid}/geometry`,
         contentType: 'application/json'
       }, JSON.stringify(field)).done((field) => {
-        onCancelFieldGeometry();
+        showEditGeometryTools(false);
+
         OlMap.removeField(field.uuid);
         OlMap.addField(field);
+        OlMap.cancelModifyField();
+
+        OlMapField.removeFieldImage();
+        OlMapField.setVisibleFieldImage(true);
+
         toastr.success(`Los límites del lote han sido actualizados.`);
       }).fail((error) => {
         const code = error.responseJSON.code;
@@ -165,6 +176,10 @@ const Fields = ((element) => {
   function onCancelFieldGeometry() {
     OlMap.cancelModifyField();
     showEditGeometryTools(false);
+
+    Indices.showIndices(true);
+    CalendarImages.showCalendar(true);
+    OlMapField.setVisibleFieldImage(true);
   }
 
   function cancelSaveField() {
