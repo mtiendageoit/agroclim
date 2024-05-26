@@ -38,7 +38,7 @@
     window.App = {};
     window.App.ImagesUrl = /*[[${imagesUrl}]]*/ null;
   </script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 
 <body>
@@ -55,10 +55,11 @@
                       <div class="media align-items-center">
                         <div class="media-body">
                           <div class="search-btn-input-container my-3">
-                            <input id="searchControl" type="text" class="form-control search-btn-form-control chat-search"
-                              placeholder="Buscar..." autocomplete="off">
-                            <button id="cleanSearchBtn" type="button" class="close search-btn-close" data-dismiss="modal"
-                              aria-label="Close">×</button>
+                            <input id="searchControl" type="text"
+                              class="form-control search-btn-form-control chat-search" placeholder="Buscar..."
+                              autocomplete="off">
+                            <button id="cleanSearchBtn" type="button" class="close search-btn-close"
+                              data-dismiss="modal" aria-label="Close">×</button>
                           </div>
                         </div>
                         <a href="javascript:void(0)"
@@ -81,8 +82,11 @@
                               <a id="drawNewFieldMenu" href="javascript:void(0)" class="dropdown-item">
                                 <i class="fas fa-draw-polygon"></i>
                                 &nbsp; Dibujar en mapa</a>
-                              <a href="javascript:void(0)" class="dropdown-item"><i class="far fa-file-image"></i>
+                              <a id="uploadFieldFileMenu" href="javascript:void(0)" class="dropdown-item"><i
+                                  class="far fa-file-image"></i>
                                 &nbsp; Cargar shapefile</a>
+                              <input class="d-none" type="file" name="uploadFieldFile" id="uploadFieldFile"
+                                accept=".zip">
                             </div>
                           </div>
                         </div>

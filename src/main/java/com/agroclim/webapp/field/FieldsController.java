@@ -63,6 +63,8 @@ public class FieldsController {
   @PostMapping("/shapefile")
   public List<Field> uploadShapefile(@RequestParam MultipartFile file,
       @AuthenticationPrincipal UserPrincipal principal) {
+    System.out.println("Se sube archivo zipfile: " + file.getOriginalFilename());
+    System.out.println("Zipfile: " + file.toString());
     return service.uploadShapefile(file, principal);
   }
 }

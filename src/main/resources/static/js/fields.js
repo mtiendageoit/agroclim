@@ -1,4 +1,104 @@
 const Fields = ((element) => {
+  const defaults = { maxFileSizeMB: 1, shapefileExts: ['shp', 'dbf', 'shx'] }
+
+  const uploadFieldFile = $('#uploadFieldFile');
+  const uploadFieldFileMenu = $('#uploadFieldFileMenu');
+
+  function init() {
+    initUI();
+    getUserFields();
+  }
+
+  function initUI() {
+    $('#fieldBorderColor').minicolors({
+      control: 'hue',
+      position: 'bottom left',
+    });
+
+    $('#fieldCrop').select2({
+      placeholder: 'Select value',
+      dropdownParent: '#saveFieldModal',
+      allowClear: false
+    });
+
+    $('#fieldPlantingDate,#fieldHarvestDate').datepicker({
+      autoclose: true,
+      todayBtn: true,
+      language: 'es',
+      todayHighlight: true,
+      format: 'dd/mm/yyyy',
+      orientation: 'bottom right',
+      container: '#saveFieldModal',
+    });
+
+    $('#fieldForm').submit(onFieldFormSubmit);
+    $('#fmsCancelBtn').click(cancelSaveField);
+    $('#drawNewFieldMenu').click(activateDrawField);
+    $('#deleteFieldForm').submit(onDeleteFieldFormSubmit);
+
+    $('#cancelFieldGeometry').click(onCancelFieldGeometry);
+    $('#saveFieldGeometry').click(onSaveFieldGeometry);
+
+    uploadFieldFileMenu.click(onUploadFieldFileMenuClick);
+    uploadFieldFile.change(onUploadFieldFileChange);
+  }
+
+  function onUploadFieldFileMenuClick() {
+    uploadFieldFile.click();
+  }
+
+  function onUploadFieldFileChange() {
+    const files = uploadFieldFile[0].files;
+    if (files && files.length > 0) {
+      const file = uploadFieldFile[0].files[0];
+      if (file && file.name.toLowerCase().endsWith('.zip')) {
+        if (validateFileSize(file)) {
+          validateZipFile(file, (valid, currentFile) => {
+            if (!valid) {
+              return toastr.warning(`El archivo zip no contiene un archivo Shapefile válido. Es necesario que se incluyan los archivos [${defaults.shapefileExts.join(', ')}] los cuales son obligatorios.`);
+            }
+
+            resetFieldModal();
+            $('#saveFieldModal').data('action', 'create-shapefile').data('file', currentFile).modal('show');
+            setTimeout(() => { $('#fieldName').select(); }, 300);
+          });
+        }
+      } else {
+        toastr.warning(`Seleccione un archivo con extensión ZIP que contenga los archivos del shapefile del lote.`);
+      }
+    }
+
+    uploadFieldFile.val(null);
+  }
+
+  function validateFileSize(file) {
+    const valid = file.size <= defaults.maxFileSizeMB * 1024 * 1024;
+    if (!valid) {
+      const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+      toastr.warning(`El tamaño del archivo debe ser menor a ${defaults.maxFileSizeMB}MB, seleccione uno de menor tamaño. (Tamaño del archivo seleccionado ${sizeMB}MB).`);
+      return false;
+    }
+    return true;
+  }
+
+  function validateZipFile(file, onValidated) {
+    const reader = new FileReader();
+
+    reader.onload = function (event) {
+      const zip = new JSZip();
+      zip.loadAsync(event.target.result).then(function (zip) {
+        const exts = [];
+        zip.forEach(function (relativePath, zipEntry) {
+          exts.push(zipEntry.name.toLowerCase().split('.').pop());
+        });
+
+        const allExtsExist = defaults.shapefileExts.every(ext => exts.includes(ext));
+        onValidated(allExtsExist, file);
+      });
+    };
+
+    reader.readAsArrayBuffer(file);
+  }
 
   element.filter = (filterText) => {
     $('#userFieldsList .field-list-item').filter(function () {
@@ -104,42 +204,6 @@ const Fields = ((element) => {
     }
   }
 
-  function init() {
-    initUI();
-    getUserFields();
-  }
-
-  function initUI() {
-    $('#fieldBorderColor').minicolors({
-      control: 'hue',
-      position: 'bottom left',
-    });
-
-    $('#fieldCrop').select2({
-      placeholder: 'Select value',
-      dropdownParent: '#saveFieldModal',
-      allowClear: false
-    });
-
-    $('#fieldPlantingDate,#fieldHarvestDate').datepicker({
-      autoclose: true,
-      todayBtn: true,
-      language: 'es',
-      todayHighlight: true,
-      format: 'dd/mm/yyyy',
-      orientation: 'bottom right',
-      container: '#saveFieldModal',
-    });
-
-    $('#fieldForm').submit(onFieldFormSubmit);
-    $('#fmsCancelBtn').click(cancelSaveField);
-    $('#drawNewFieldMenu').click(activateDrawField);
-    $('#deleteFieldForm').submit(onDeleteFieldFormSubmit);
-
-    $('#cancelFieldGeometry').click(onCancelFieldGeometry);
-    $('#saveFieldGeometry').click(onSaveFieldGeometry);
-  }
-
   function onSaveFieldGeometry() {
     const field = OlMap.getModifiedField();
     if (field) {
@@ -220,6 +284,9 @@ const Fields = ((element) => {
 
     if (action === 'create') {
       insertField(field);
+    } if (action === 'create-shapefile') {
+      const file = $('#saveFieldModal').data('file')
+      insertFieldFromShapefile(field, file);
     } else if (action === 'update') {
       const uuid = $('#saveFieldModal').data('uuid');
       updateField(uuid, field);
@@ -252,6 +319,33 @@ const Fields = ((element) => {
       showField(field);
 
       $('#saveFieldModal').modal('hide');
+      toastr.success(`Lote guardado exitosamente.`);
+    }).fail(() => {
+      toastr.warning(`Ocurrio un error al ejecutar la acción, intente nuevamente más tarde.`);
+    }).always(() => {
+      enableButton($('#fmsSaveBtn,#fmsCancelBtn'));
+    });
+  }
+
+  function insertFieldFromShapefile(field, file) {
+    disableButton($('#fmsCancelBtn'));
+    disableButton($('#fmsSaveBtn'), true);
+
+    const body = new FormData();
+    body.append('file', file);
+
+
+    $.post({
+      url: `api/fields/shapefile`,
+      processData: false,
+      contentType: false,
+    }, body).done((field) => {
+      // resetFieldModal();
+
+      // OlMap.removeDrawedField();
+      // showField(field);
+
+      // $('#saveFieldModal').modal('hide');
       toastr.success(`Lote guardado exitosamente.`);
     }).fail(() => {
       toastr.warning(`Ocurrio un error al ejecutar la acción, intente nuevamente más tarde.`);
