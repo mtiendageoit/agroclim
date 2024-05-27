@@ -5,7 +5,6 @@ import java.util.*;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.agroclim.webapp.exception.NotFoundException;
 import com.agroclim.webapp.field.images.*;
@@ -75,11 +74,6 @@ public class FieldService {
   private Field fieldByUuid(String uuid) {
     return repository.findByUuid(uuid)
         .orElseThrow(() -> new NotFoundException("field-not-found", "Field not found"));
-  }
-
-  public List<Field> uploadShapefile(MultipartFile file, UserPrincipal principal) {
-    
-    return null;
   }
 
   @Transactional

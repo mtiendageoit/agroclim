@@ -7,7 +7,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.agroclim.webapp.field.images.FieldImage;
 import com.agroclim.webapp.field.images.FieldImageDateDto;
@@ -58,13 +57,5 @@ public class FieldsController {
   public FieldImage indiceImageField(@PathVariable String uuid, @RequestParam int indice,
       @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate from) {
     return service.indiceImageField(uuid, indice, from);
-  }
-
-  @PostMapping("/shapefile")
-  public List<Field> uploadShapefile(@RequestParam MultipartFile file,
-      @AuthenticationPrincipal UserPrincipal principal) {
-    System.out.println("Se sube archivo zipfile: " + file.getOriginalFilename());
-    System.out.println("Zipfile: " + file.toString());
-    return service.uploadShapefile(file, principal);
   }
 }

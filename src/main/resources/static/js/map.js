@@ -26,10 +26,10 @@ const OlMap = ((element) => {
       controls: [],
       layers: [RasterLayer, FieldsVectorLayer],
       view: new ol.View({
-        projection: new ol.proj.Projection({
-          code: 'EPSG:3857',
-          units: 'm',
-        }),
+        // projection: new ol.proj.Projection({
+        //   code: 'EPSG:3857',
+        //   units: 'm',
+        // }),
         center: MapOptions.center,
         zoom: MapOptions.zoom
       })
@@ -225,6 +225,11 @@ const OlMap = ((element) => {
   function geometryToWKT(geometry) {
     const clone = geometry.clone();
     clone.transform('EPSG:3857', 'EPSG:4326');
+    return wktFormatter.writeGeometry(clone);
+  }
+
+  element.geometryToWKT = (geometry) => {
+    const clone = geometry.clone();
     return wktFormatter.writeGeometry(clone);
   }
 

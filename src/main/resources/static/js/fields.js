@@ -1,6 +1,5 @@
 const Fields = ((element) => {
-  const defaults = { maxFileSizeMB: 1, shapefileExts: ['shp', 'dbf', 'shx'] }
-
+  const fieldName = $('#fieldName');
   const uploadFieldFile = $('#uploadFieldFile');
   const uploadFieldFileMenu = $('#uploadFieldFileMenu');
 
@@ -52,17 +51,11 @@ const Fields = ((element) => {
     if (files && files.length > 0) {
       const file = uploadFieldFile[0].files[0];
       if (file && file.name.toLowerCase().endsWith('.zip')) {
-        if (validateFileSize(file)) {
-          validateZipFile(file, (valid, currentFile) => {
-            if (!valid) {
-              return toastr.warning(`El archivo zip no contiene un archivo Shapefile válido. Es necesario que se incluyan los archivos [${defaults.shapefileExts.join(', ')}] los cuales son obligatorios.`);
-            }
-
-            resetFieldModal();
-            $('#saveFieldModal').data('action', 'create-shapefile').data('file', currentFile).modal('show');
-            setTimeout(() => { $('#fieldName').select(); }, 300);
-          });
-        }
+        validateShapefile(file, (name, wkt) => {
+          resetFieldModal();
+          fieldName.val(name);
+          $('#saveFieldModal').data('action', 'create-shapefile').data('wkt', wkt).modal('show');
+        });
       } else {
         toastr.warning(`Seleccione un archivo con extensión ZIP que contenga los archivos del shapefile del lote.`);
       }
@@ -71,33 +64,40 @@ const Fields = ((element) => {
     uploadFieldFile.val(null);
   }
 
-  function validateFileSize(file) {
-    const valid = file.size <= defaults.maxFileSizeMB * 1024 * 1024;
-    if (!valid) {
-      const sizeMB = (file.size / 1024 / 1024).toFixed(2);
-      toastr.warning(`El tamaño del archivo debe ser menor a ${defaults.maxFileSizeMB}MB, seleccione uno de menor tamaño. (Tamaño del archivo seleccionado ${sizeMB}MB).`);
-      return false;
-    }
-    return true;
-  }
+  function validateShapefile(file, onSuccess) {
+    file.arrayBuffer().then(arrayBuffer => {
+      shp(arrayBuffer).then(geojson => {
+        console.log(geojson);
 
-  function validateZipFile(file, onValidated) {
-    const reader = new FileReader();
+        if (geojson.features > 1) {
+          return toastr.warning(`Solo se permite un lote como geometría dentro de un archivo shapefile.`);
+        }
 
-    reader.onload = function (event) {
-      const zip = new JSZip();
-      zip.loadAsync(event.target.result).then(function (zip) {
-        const exts = [];
-        zip.forEach(function (relativePath, zipEntry) {
-          exts.push(zipEntry.name.toLowerCase().split('.').pop());
-        });
+        if (geojson.features > 1) {
+          return toastr.warning(`Solo se permite un lote como geometría dentro de un archivo shapefile.`);
+        }
+        if (geojson.features == 0) {
+          return toastr.warning(`El archivo shapefile está vacío.`);
+        }
 
-        const allExtsExist = defaults.shapefileExts.every(ext => exts.includes(ext));
-        onValidated(allExtsExist, file);
+        const feature = geojson.features[0];
+        if (feature.geometry.type !== 'Polygon') {
+          return toastr.warning(`El tipo de geometría del archivo shapefile es inválida, solo se soportan Polígonos.`);
+        }
+
+        const poly = new ol.geom.Polygon(feature.geometry.coordinates);
+        const wkt = OlMap.geometryToWKT(poly);
+
+        onSuccess(geojson.fileName, wkt);
+      }).catch(error => {
+        console.log(error);
+        toastr.warning(`Error al convertir shapefile en geojson`);
       });
-    };
+    }).catch(error => {
+      console.log(error);
+      toastr.warning(`Error a la hora de leer el archivo shapefile`);
+    });
 
-    reader.readAsArrayBuffer(file);
   }
 
   element.filter = (filterText) => {
@@ -105,56 +105,6 @@ const Fields = ((element) => {
       $(this).toggle($(this).attr('fieldname').toLowerCase().indexOf(filterText) > -1);
     });
   };
-
-  element.processClickOverField = (field, coordinates) => {
-
-
-
-
-    const featureCloned = feature.clone();
-    const geometry = featureCloned.getGeometry().transform('EPSG:3857', 'EPSG:4326');
-
-    const coords = geometry.getCoordinates()[0];
-    getImageTiff(coords);
-  }
-
-  function getImageTiff(coords) {
-
-    const nameImg = this.crypto.randomUUID();
-    const body = {
-      coordinates: coords,
-      name: nameImg
-    }
-
-    toastr.success(`Se ha enviado a procesar el indice`);
-
-    return;
-
-    $.ajax({
-      type: "POST",
-      url: "https://us-central1-agroclimb.cloudfunctions.net/ndvi-function",
-      dataType: 'json',
-      contentType: 'application/json',
-      data: JSON.stringify(body),
-      success: function (result, status, xhr) {
-      },
-      error: function (xhr, status, error) {
-        source.sourceInfo_[0].url = `${tiff}/${nameImg}.tif`
-
-        setTimeout(() => {
-          GeoTIFFLayer.setSource(new ol.source.GeoTIFF({
-            sources: [
-              {
-                url: `https://storage.googleapis.com/agroclim-bucket/${nameImg}.tif`,
-                nodata: 0
-              },
-            ],
-          }))
-        }, 1000);
-      }
-    });
-
-  }
 
   element.goToFieldInMap = (uuid) => {
     OlMap.goToFeature(uuid);
@@ -182,7 +132,7 @@ const Fields = ((element) => {
     if (field) {
       resetFieldModal();
 
-      $('#fieldName').val(field.name);
+      fieldName.val(field.name);
       $('#fieldCrop').val(field.cropId).trigger('change.select2');
       $('#fieldBorderColor').minicolors('value', field.borderColor);
       $('#fieldBorderSize').val(field.borderSize);
@@ -285,8 +235,9 @@ const Fields = ((element) => {
     if (action === 'create') {
       insertField(field);
     } if (action === 'create-shapefile') {
-      const file = $('#saveFieldModal').data('file')
-      insertFieldFromShapefile(field, file);
+      const wkt = $('#saveFieldModal').data('wkt');
+      field.wkt = wkt;
+      insertField(field);
     } else if (action === 'update') {
       const uuid = $('#saveFieldModal').data('uuid');
       updateField(uuid, field);
@@ -295,7 +246,7 @@ const Fields = ((element) => {
 
   function getFieldData() {
     return {
-      name: emptyToNull($('#fieldName').val()),
+      name: emptyToNull(fieldName.val()),
       cropId: emptyToNull($('#fieldCrop').val()),
       plantingDate: emptyToNull($('#fieldPlantingDate').val()),
       harvestDate: emptyToNull($('#fieldHarvestDate').val()),
@@ -319,33 +270,6 @@ const Fields = ((element) => {
       showField(field);
 
       $('#saveFieldModal').modal('hide');
-      toastr.success(`Lote guardado exitosamente.`);
-    }).fail(() => {
-      toastr.warning(`Ocurrio un error al ejecutar la acción, intente nuevamente más tarde.`);
-    }).always(() => {
-      enableButton($('#fmsSaveBtn,#fmsCancelBtn'));
-    });
-  }
-
-  function insertFieldFromShapefile(field, file) {
-    disableButton($('#fmsCancelBtn'));
-    disableButton($('#fmsSaveBtn'), true);
-
-    const body = new FormData();
-    body.append('file', file);
-
-
-    $.post({
-      url: `api/fields/shapefile`,
-      processData: false,
-      contentType: false,
-    }, body).done((field) => {
-      // resetFieldModal();
-
-      // OlMap.removeDrawedField();
-      // showField(field);
-
-      // $('#saveFieldModal').modal('hide');
       toastr.success(`Lote guardado exitosamente.`);
     }).fail(() => {
       toastr.warning(`Ocurrio un error al ejecutar la acción, intente nuevamente más tarde.`);
@@ -381,12 +305,12 @@ const Fields = ((element) => {
     OlMap.activateDrawField(() => {
       resetFieldModal();
       $('#saveFieldModal').data('action', 'create').modal('show');
-      setTimeout(() => { $('#fieldName').select(); }, 300);
+      setTimeout(() => { fieldName.select(); }, 300);
     });
   }
 
   function resetFieldModal() {
-    $('#fieldName').val(null);
+    fieldName.val(null);
     $('#fieldCrop').val(null).trigger('change.select2');
     $('#fieldBorderColor').minicolors('value', '#00ff00');
     $('#fieldBorderSize').val(5);
