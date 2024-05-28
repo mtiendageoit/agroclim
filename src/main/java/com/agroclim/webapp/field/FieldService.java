@@ -49,19 +49,27 @@ public class FieldService {
   @Transactional
   public void delete(String uuid) {
     Field field = fieldByUuid(uuid);
-    List<FieldImage> images = fieldImageRepository.findByFieldId(field.getId());
+    repository.delete(field);
 
-    fieldImageRepository.deleteAll(images);
-    repository.deleteByUuid(uuid);
-
-    earthEngineClient.deleteFieldImages(images);
+    deleteFieldImages(fieldImageRepository.findByFieldId(field.getId()));
   }
 
+  @Transactional
   public Field putGeometry(String uuid, FieldDto input) {
     Field field = fieldByUuid(uuid);
     field.setWkt(input.getWkt());
     field.setVersion(field.getVersion() + 1);// Change version field when geometry change
-    return repository.save(field);
+    field = repository.save(field);
+
+    // Delete field indices images for update field geometry
+    deleteFieldImages(fieldImageRepository.findByFieldId(field.getId()));
+
+    return field;
+  }
+
+  private void deleteFieldImages(List<FieldImage> images) {
+    fieldImageRepository.deleteAll(images);
+    earthEngineClient.deleteFieldImages(images);
   }
 
   public Field update(String uuid, FieldDto input) {
@@ -83,7 +91,7 @@ public class FieldService {
   }
 
   @Transactional
-  public FieldImage indiceImageField(String uuid, int indiceId, LocalDate from) {
+  public FieldImage indiceImageField(String uuid, int indiceId, LocalDate from, UserPrincipal principal) {
     Field field = fieldByUuid(uuid);
     Optional<FieldImage> opt = fieldImageRepository.findByFieldIdAndFieldVersionAndIndiceIdAndImageDate(field.getId(),
         field.getVersion(), indiceId, from);
@@ -96,12 +104,13 @@ public class FieldService {
     // process field image in google cloud funcions
 
     String imageUuid = RandomCodeGenerator.generateUUIDCode();
-    String image = earthEngineClient.processIndiceImageField(field, imageUuid, indice, from);
+    earthEngineClient.processIndiceImageField(field, imageUuid, indice, from);
 
     FieldImage fieldImage = FieldImage.builder()
         .uuid(imageUuid)
         .fieldId(field.getId())
         .indiceId(indiceId)
+        .userId(principal.getId())
         .imageDate(from)
         .status(ImageStatus.CREATED)
         .fieldVersion(field.getVersion())
@@ -122,6 +131,11 @@ public class FieldService {
     List<FieldImageDateDto> images = earthEngineClient.imageDates(field, from, to);
     Collections.sort(images, Comparator.comparing(FieldImageDateDto::getImageDate).reversed());
     return images;
+  }
+
+  public void deleteFieldsFor(long userId) {
+    deleteFieldImages(fieldImageRepository.findByUserId(userId));
+    repository.deleteByUserId(userId);
   }
 
 }

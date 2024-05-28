@@ -32,6 +32,9 @@ public class FieldImage {
   @JsonIgnore
   private int indiceId;
 
+  @JsonIgnore
+  private long userId;
+
   @JsonFormat(pattern = "dd/MM/yyyy")
   private LocalDate imageDate;
 
