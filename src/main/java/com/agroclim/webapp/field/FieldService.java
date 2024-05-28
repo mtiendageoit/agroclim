@@ -49,9 +49,8 @@ public class FieldService {
   @Transactional
   public void delete(String uuid) {
     Field field = fieldByUuid(uuid);
-    repository.delete(field);
-
     deleteFieldImages(fieldImageRepository.findByFieldId(field.getId()));
+    repository.delete(field);
   }
 
   @Transactional
