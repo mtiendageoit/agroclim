@@ -417,6 +417,12 @@ const OlMapField = ((element) => {
     imageLayer.setSource(null);
   }
 
+  element.getProcessField = () => {
+    if (processFeature) {
+      return processFeature.get('field');
+    }
+  }
+
   element.setVisibleFieldImage = (visible) => {
     imageLayer.setVisible(visible);
   }

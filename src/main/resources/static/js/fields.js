@@ -220,7 +220,18 @@ const Fields = ((element) => {
 
   function onDeleteFieldSuccess(uuid) {
     $(`#field-${uuid}`).remove();
+
     OlMap.removeField(uuid);
+
+    const processField = OlMapField.getProcessField();
+    if (processField) {
+      const isProcessField = processField.uuid == uuid;
+      if (isProcessField) {
+        Indices.showIndices(false);
+        CalendarImages.showCalendar(false);
+        OlMapField.removeFieldImage(false);
+      }
+    }
 
     $('#deleteFieldModal').modal('hide');
     toastr.success(`Se ha eliminado el lote exitosamente.`);

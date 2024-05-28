@@ -6,12 +6,13 @@ import java.util.*;
 
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.agroclim.webapp.config.AppConfig;
 import com.agroclim.webapp.field.Field;
-import com.agroclim.webapp.field.images.FieldImageDateDto;
+import com.agroclim.webapp.field.images.*;
 import com.agroclim.webapp.google.functions.*;
 import com.agroclim.webapp.indices.Indice;
 
@@ -87,5 +88,14 @@ public class EarthEngineClient {
     }
 
     return coordinates;
+  }
+
+  @Async
+  public void deleteFieldImages(List<FieldImage> images) {
+    List<String> uuids = images.stream().map(item -> item.getUuid()).toList();
+    FieldImagesDto fieldImages = new FieldImagesDto(uuids);
+
+    String url = config.getGoogleCloudFunctionsUrl() + "/storage-delete-images";
+    restTemplate.postForEntity(url, fieldImages, String.class);
   }
 }

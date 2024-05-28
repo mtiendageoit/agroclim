@@ -48,7 +48,13 @@ public class FieldService {
 
   @Transactional
   public void delete(String uuid) {
+    Field field = fieldByUuid(uuid);
+    List<FieldImage> images = fieldImageRepository.findByFieldId(field.getId());
+
+    fieldImageRepository.deleteAll(images);
     repository.deleteByUuid(uuid);
+
+    earthEngineClient.deleteFieldImages(images);
   }
 
   public Field putGeometry(String uuid, FieldDto input) {

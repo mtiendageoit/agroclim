@@ -6,6 +6,8 @@ import java.util.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FieldImageRepository extends JpaRepository<FieldImage, Long> {
+  List<FieldImage> findByFieldId(long fieldId);
   Optional<FieldImage> findByFieldIdAndFieldVersionAndIndiceIdAndImageDate(long fieldId, int version, int indice,
       LocalDate from);
+
 }
