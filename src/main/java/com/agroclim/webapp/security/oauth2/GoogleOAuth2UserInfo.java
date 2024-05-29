@@ -12,7 +12,8 @@ public class GoogleOAuth2UserInfo {
     public static UserPrincipal userPrincipalFrom(Map<String, Object> attributes) {
         String name = attributes.get("name").toString();
         String email = attributes.get("email").toString();
+        String avatar = attributes.get("picture").toString();
         List<GrantedAuthority> authorities = Arrays.asList(new SimpleGrantedAuthority(UserRole.USER.name()));
-        return new UserPrincipal(email, name, authorities, AuthProvider.google);
+        return new UserPrincipal(email, name, avatar, authorities, AuthProvider.google);
     }
 }

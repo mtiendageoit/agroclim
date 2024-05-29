@@ -27,6 +27,8 @@ public class User {
   @Column(nullable = false)
   private String email;
 
+  private String avatar;
+
   private String phone;
 
   @JsonIgnore

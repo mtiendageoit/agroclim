@@ -99,7 +99,7 @@
                         <li class="dropright">
                           <div class="d-inline-flex align-items-center align-middle w-100 px-2 py-1 mb-1 menu-item"
                             data-toggle="dropdown" aria-expanded="true" data-boundary="viewport">
-                            <img th:src="@{/img/profile-img.png}" alt="" class="d-block ui-w-40 rounded-circle">
+                            <img th:src="${principal.avatar != null ? principal.avatar : '/img/profile-img.png'}" alt="" class="d-block ui-w-40 rounded-circle">
                             <span class="px-1 flex-grow-1 text-truncate principal-name">[[${principal.name}]]</span>
                             <i class="fas fa-angle-right d-block"></i>
                           </div>

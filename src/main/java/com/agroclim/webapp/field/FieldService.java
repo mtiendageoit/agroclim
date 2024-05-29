@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.agroclim.webapp.exception.NotFoundException;
 import com.agroclim.webapp.field.images.*;
-import com.agroclim.webapp.google.EarthEngineClient;
+import com.agroclim.webapp.google.GoogleCloudClient;
 import com.agroclim.webapp.indices.*;
 import com.agroclim.webapp.security.UserPrincipal;
 import com.agroclim.webapp.utils.RandomCodeGenerator;
@@ -18,7 +18,7 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class FieldService {
-  private final EarthEngineClient earthEngineClient;
+  private final GoogleCloudClient googleCloudClient;
 
   private final FieldRepository repository;
   private final IndiceRepository indiceRepository;
@@ -68,7 +68,7 @@ public class FieldService {
 
   private void deleteFieldImages(List<FieldImage> images) {
     fieldImageRepository.deleteAll(images);
-    earthEngineClient.deleteFieldImages(images);
+    googleCloudClient.deleteFieldImages(images);
   }
 
   public Field update(String uuid, FieldDto input) {
@@ -103,7 +103,7 @@ public class FieldService {
     // process field image in google cloud funcions
 
     String imageUuid = RandomCodeGenerator.generateUUIDCode();
-    earthEngineClient.processIndiceImageField(field, imageUuid, indice, from);
+    googleCloudClient.processIndiceImageField(field, imageUuid, indice, from);
 
     FieldImage fieldImage = FieldImage.builder()
         .uuid(imageUuid)
@@ -127,7 +127,7 @@ public class FieldService {
     LocalDate to = LocalDate.now().plusDays(1);
     LocalDate from = to.minusYears(1);
 
-    List<FieldImageDateDto> images = earthEngineClient.imageDates(field, from, to);
+    List<FieldImageDateDto> images = googleCloudClient.imageDates(field, from, to);
     Collections.sort(images, Comparator.comparing(FieldImageDateDto::getImageDate).reversed());
     return images;
   }

@@ -27,14 +27,14 @@
                 <div class="tab-content">
                   <div class="tab-pane fade show active" id="account-general">
                     <div class="card-body media align-items-center">
-                      <img th:src="@{/img/profile-img.png}" alt="avatar" class="d-block ui-w-80">
+                      <img th:src="${principal.avatar != null ? principal.avatar : '/img/profile-img.png'}" alt="avatar" class="d-block userAvatarImg" style="width: 80px; height: 80px;">
                       <div class="media-body ml-4">
-                        <label class="btn btn-outline-success">
+                        <label id="updateAvatarBtn" class="btn btn-outline-success">
                           Cargar nueva foto
-                          <input type="file" class="account-settings-fileinput">
+                          <input id="avatarFile" type="file" class="account-settings-fileinput" accept=".png, .jpg, .jpeg, .gif">
                         </label>
                         <div class="text-light small mt-1">
-                          Formatos permitidos JPG, GIF o PNG. Tamaño máximo 800K
+                          Formatos permitidos PNG, JPG o GIF. Tamaño máximo 1MB
                         </div>
                       </div>
                     </div>

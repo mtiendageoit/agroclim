@@ -27,21 +27,22 @@ public class UserService implements UserDetailsService {
 
   public UserPrincipal userPrincipalFromOAuth2Login(String registrationId, Map<String, Object> atributes) {
     UserPrincipal principal = OAuth2UserInfoFactory.getOAuth2UserInfo(registrationId, atributes);
-    User user = registerUserIfNotExists(principal.getName(), principal.getEmail(), principal.getProvider());
+    User user = registerUserIfNotExists(principal);
     principal.setId(user.getId());
     return principal;
   }
 
-  private User registerUserIfNotExists(String name, String email, AuthProvider provider) {
-    Optional<User> opt = repository.findByEmail(email);
+  private User registerUserIfNotExists(UserPrincipal principal) {
+    Optional<User> opt = repository.findByEmail(principal.getEmail());
 
     if (opt.isPresent())
       return opt.get();
 
     User user = User.builder()
-        .fullname(name)
-        .email(email)
-        .authProvider(provider)
+        .fullname(principal.getName())
+        .email(principal.getEmail())
+        .avatar(principal.getAvatar())
+        .authProvider(principal.getProvider())
         .enabled(true)
         .createdAt(new Date())
         .build();

@@ -8,7 +8,9 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.agroclim.webapp.config.AppConfig;
 import com.agroclim.webapp.field.Field;
@@ -20,7 +22,7 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
-public class EarthEngineClient {
+public class GoogleCloudClient {
   private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
   private final AppConfig config;
@@ -97,5 +99,20 @@ public class EarthEngineClient {
 
     String url = config.getGoogleCloudFunctionsUrl() + "/storage-delete-images";
     restTemplate.postForEntity(url, fieldImages, String.class);
+  }
+
+  public void updateUserAvatar(MultipartFile file, String filename) {
+    String url = config.getGoogleCloudFunctionsUrl() + "/user-avatar";
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+    MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+    body.add("file", file.getResource());
+    body.add("filename", filename);
+
+    HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+    restTemplate.postForEntity(url, requestEntity, String.class);
   }
 }

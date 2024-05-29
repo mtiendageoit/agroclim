@@ -2,12 +2,11 @@ package com.agroclim.webapp.profile;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.agroclim.webapp.security.UserPrincipal;
 
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @AllArgsConstructor
@@ -25,6 +24,11 @@ public class ProfileController {
     Profile profile = profileService.updateProfileGeneral(input, principal);
     principal.setName(profile.getFullname());
     return profile;
+  }
+
+  @PostMapping(params = "avatar")
+  public String updateAvatar(@RequestParam MultipartFile file, @AuthenticationPrincipal UserPrincipal principal) {
+    return profileService.updateAvatar(file, principal);
   }
 
 }

@@ -12,6 +12,7 @@ import java.util.*;
 @Data
 public class UserPrincipal implements UserDetails, OidcUser {
     private Long id;
+    private String avatar;
     private AuthProvider provider;
 
     // For UserDetails
@@ -47,9 +48,10 @@ public class UserPrincipal implements UserDetails, OidcUser {
         this.provider = AuthProvider.database;
     }
 
-    public UserPrincipal(String email, String name, List<GrantedAuthority> authorities, AuthProvider provider) {
+    public UserPrincipal(String email, String name, String avatar, List<GrantedAuthority> authorities, AuthProvider provider) {
         this.username = this.email = email;
         this.name = name;
+        this.avatar = avatar;
         this.authorities = authorities;
 
         this.enabled = true;

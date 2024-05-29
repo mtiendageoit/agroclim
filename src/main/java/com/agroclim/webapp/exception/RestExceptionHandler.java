@@ -12,9 +12,9 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
-  @ExceptionHandler(InvalidPasswordException.class)
+  @ExceptionHandler(BaseException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ResponseEntity<Object> handleBaseException(InvalidPasswordException exception,
+  public ResponseEntity<Object> handleBaseException(BaseException exception,
       WebRequest request) {
     String error = exception.getMessage();
     log.error(error, exception);

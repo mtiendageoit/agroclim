@@ -6,7 +6,7 @@ $(function () {
       }
     }
   });
-  
+
   $('[data-toggle="tooltip"]').tooltip();
 });
 
@@ -34,6 +34,32 @@ const soloNumeros = (event) => {
   const esNumero = /[0-9]/.test(tecla);
   if (!esNumero) {
     event.preventDefault();
+  }
+}
+
+const validateMaxFileSizeMB = (file, maxFileSizeMB) => {
+  const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+  const valid = file.size <= maxFileSizeMB * 1024 * 1024;
+
+  return {
+    valid: valid,
+    fileSizeMB: sizeMB,
+    maxFileSizeMB: maxFileSizeMB
+  }
+}
+
+const validateFileExt = (file, validExts) => {
+  const ext = file.name.substring(file.name.lastIndexOf('.') + 1);
+  const valid = validExts
+    .map(item => emptyToNull(item))
+    .filter(item => item !== null)
+    .map(item => item.toUpperCase())
+    .includes(ext.toUpperCase());
+
+  return {
+    valid: valid,
+    fileExt: ext,
+    validExts: validExts
   }
 }
 
