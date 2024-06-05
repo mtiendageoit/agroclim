@@ -360,7 +360,7 @@ const Fields = ((element) => {
             </div>
             <div class="ml-2">
               <p class="font-weight-bold m-0 text-truncate field-list-item-name">${field.name}</p>
-              <small class="font-weight-normal">${Measure.areaM2ToHa(field.areaM2).toFixed(2)} ha</small>
+              <small class="font-weight-normal">${Measure.areaM2ToHa(field.areaM2)} ha</small>
             </div>
           </div>
           <div class="btn-group dropright">

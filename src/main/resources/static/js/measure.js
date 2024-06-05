@@ -221,6 +221,8 @@ const Measure = (function (element) {
       output = formatNumber(Math.round((area / 1000000) * 100) / 100) + ' km\xB2';
     }
 
+    output += ` | ${element.areaM2ToHa(area)} ha`;
+
     return output;
   };
 
@@ -334,7 +336,7 @@ const Measure = (function (element) {
   }
 
   element.areaM2ToHa = (areaM2) => {
-    return areaM2 / 10_000;
+    return formatNumber(Math.round(areaM2 * 100) / 100 / 10_000);
   }
 
   init();
