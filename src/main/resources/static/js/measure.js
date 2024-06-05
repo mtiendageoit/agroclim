@@ -333,6 +333,10 @@ const Measure = (function (element) {
     olMap.addInteraction(modify);
   }
 
+  element.areaM2ToHa = (areaM2) => {
+    return areaM2 / 10_000;
+  }
+
   init();
 
   return element;

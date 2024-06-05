@@ -109,6 +109,7 @@ const OlMap = ((element) => {
   element.updateFeatureField = (field) => {
     const feature = FieldsSource.getFeatureById(field.uuid);
     if (feature) {
+      field.areaM2 = OlGeometryUtils.getAreaM2(feature.getGeometry());
       feature.set('field', field);
       feature.setStyle(strokeStyle(field.borderColor, field.borderSize));
     }
@@ -192,6 +193,7 @@ const OlMap = ((element) => {
     const style = strokeStyle(field.borderColor, field.borderSize);
     feature.setStyle(style);
     feature.setId(field.uuid);
+    field.areaM2 = OlGeometryUtils.getAreaM2(feature.getGeometry());
     feature.set('field', field);
 
     FieldsSource.addFeature(feature);
@@ -474,6 +476,13 @@ const OlMapField = ((element) => {
 
 
 
+const OlGeometryUtils = ((element) => {
+  element.getAreaM2 = (polygon) => {
+    return ol.sphere.getArea(polygon);
+  }
+
+  return element;
+})({});
 
 
 
