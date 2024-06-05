@@ -323,15 +323,14 @@ const OlMapField = ((element) => {
 
     const feature = olMap.forEachFeatureAtPixel(evt.pixel, f => {
       return f.getId() == processFeature.getId() ? f : null;
-    })
+    });
 
     tooltip.style.display = feature ? '' : 'none'
     if (feature) {
-      console.log(`Data: ${data}`);
-      const indiceValue = Indices.getIndiceValueFromPixel(data);
-      console.log(`Valor calculado: ${indiceValue}`);
+      const value = data[0];
+      const indice = Indices.selectedIndice();
 
-      tooltip.innerHTML = `${parseFloat(indiceValue).toFixed(2)}`
+      tooltip.innerHTML = `${indice.name}: ${parseFloat(value).toFixed(2)}`
       overlay.setPosition(evt.coordinate)
     }
 
@@ -384,10 +383,10 @@ const OlMapField = ((element) => {
 
   function getIndiceImageField() {
     const from = CalendarImages.getDate();
-    const indice = Indices.selectedIndice();
+    const indiceId = Indices.selectedIndice().id;
     const field = processFeature.get('field');
 
-    const url = `api/fields/${field.uuid}/image?indice=${indice}&from=${from}`;
+    const url = `api/fields/${field.uuid}/image?indice=${indiceId}&from=${from}`;
 
     $.post(url).done((image) => {
       addFieldImageToMap(image);
@@ -433,6 +432,7 @@ const OlMapField = ((element) => {
 
   function addFieldImageToMap(image) {
     const source = new ol.source.GeoTIFF({
+      normalize: false,
       sources: [{
         url: `${App.ImagesUrl}/${image.uuid}.tif`,
         nodata: 0
@@ -440,6 +440,9 @@ const OlMapField = ((element) => {
     });
 
     imageLayer.setSource(source);
+
+    const style = Indices.getSelectedIndiceStyle();
+    imageLayer.setStyle(style);
   }
 
   function getClosesImageDateToNow(dates) {

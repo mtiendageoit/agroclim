@@ -1,92 +1,120 @@
 const Indices = ((element) => {
-  const INDICES = { NDVI: 1, EVI: 2, AVI: 3, SAVI: 4, MSI: 5, VCI: 6, VHI: 7 }
+  const INDICES = {
+    NDVI: { id: 1, name: 'NDVI' }, EVI: { id: 2, name: 'EVI' }, AVI: { id: 3, name: 'AVI' },
+    SAVI: { id: 4, name: 'SAVI' }, MSI: { id: 5, name: 'MSI' }, VCI: { id: 6, name: 'VCI' }, VHI: { id: 7, name: 'VHI' }
+  }
   const indicesBtns = $('.indice-menu-item');
   const selectedIndiceBtn = $('#selectedIndiceBtn');
   const container = $('#indicesListContainer');
 
 
-  element.getIndiceValueFromPixel = (data) => {
+  element.getSelectedIndiceStyle = () => {
     const indice = element.selectedIndice();
-    if (INDICES.NDVI == indice) return ndvi(data);
-    if (INDICES.EVI == indice) return evi(data);
-    if (INDICES.AVI == indice) return avi(data);
-    if (INDICES.SAVI == indice) return savi(data);
-    if (INDICES.MSI == indice) return msi(data);
-    if (INDICES.VCI == indice) return vci(data);
-    if (INDICES.VHI == indice) return vhi(data);
+    if (INDICES.NDVI == indice) return ndviStyle();
+    if (INDICES.EVI == indice) return eviStyle();
+    if (INDICES.AVI == indice) return aviStyle();
+    if (INDICES.SAVI == indice) return saviStyle();
+    if (INDICES.MSI == indice) return msiStyle();
+    if (INDICES.VCI == indice) return vciStyle();
+    if (INDICES.VHI == indice) return vhiStyle();
   };
 
-  function vhi(data) {
-    if (data) {
-      // Obtener el valor del VHI
-      const vhiBandIndex = data.length - 1; // La última banda se asume como el VHI
-      const vhi = data[vhiBandIndex];
-      return vhi;
-    }
-
-    return 0;
+  function vhiStyle() {
+    return {
+      color: [
+        'interpolate',
+        ['linear'],
+        ['band', 1],
+        -9999, 'Transparent',
+        0, '#A52A2A',
+        0.5, '#FFFF00',
+        1, '#008000',
+      ],
+    };
   }
 
-  function vci(data) {
-    if (data) {
-      // Obtener el valor del VCI
-      const vciBandIndex = data.length - 1;
-      const vci = data[vciBandIndex];
-      return vci;
-    }
-
-    return 0;
+  function vciStyle() {
+    return {
+      color: [
+        'interpolate',
+        ['linear'],
+        ['band', 1],
+        -9999, 'Transparent',
+        0, '#FF0000',
+        50, '#FFFF00',
+        100, '#008000',
+      ],
+    };
   }
 
-  function msi(data) {
-    if (data) {
-      const nir = data[0];
-      const redEdge = data[1];
-      return nir / redEdge;
-    }
-
-    return 0;
+  function msiStyle() {
+    return {
+      color: [
+        'interpolate',
+        ['linear'],
+        ['band', 1],
+        -9999, 'Transparent',
+        0, '#A52A2A',
+        1, '#FFFFFF',
+        2, '#0000FF',
+      ],
+    };
   }
 
-  function savi(data) {
-    if (data) {
-      const nir = data[0];
-      const red = data[1];
-      return (nir - red) / (nir + red + 0.428) * (1.428);
-    }
-
-    return 0;
+  function saviStyle() {
+    return {
+      color: [
+        'interpolate',
+        ['linear'],
+        ['band', 1],
+        -9999, 'Transparent',
+        -1, '#A52A2A',
+        0, '#FFFFFF',
+        1, '#008000',
+      ],
+    };
   }
 
-  function avi(data) {
-    if (data) {
-      const nir = data[0];
-      const red = data[1];
-      return Math.pow(nir * (1 - red) * (nir - red), 1 / 3);
-    }
-
-    return 0;
+  function aviStyle() {
+    return {
+      color: [
+        'interpolate',
+        ['linear'],
+        ['band', 1],
+        -9999, 'Transparent',
+        0, '#0000FF',
+        0.5, '#FFFFFF',
+        1, '#008000',
+      ],
+    };
   }
 
-  function evi(data) {
-    if (data) {
-      const blue = data[0];
-      const red = data[1];
-      const nir = data[2];
-      return 2.5 * (nir - red) / ((nir + 6 * red - 7.5 * blue) + 1);
-    }
-
-    return 0;
+  function eviStyle() {
+    return {
+      color: [
+        'interpolate',
+        ['linear'],
+        ['band', 1],
+        -9999, 'Transparent',
+        -1, '#0000FF',
+        0, '#FFFFFF',
+        1, '#008000',
+      ],
+    };
   }
 
-  function ndvi(data) {
-    if (data) {
-      const red = data[0];
-      const nir = data[1];
-      return (nir - red) / (nir + red);
-    }
-
-    return 0;
+  function ndviStyle() {
+    return {
+      color: [
+        'interpolate',
+        ['linear'],
+        ['band', 1],
+        -9999, 'Transparent',
+        -0.2, '#FF0000',
+        0, '#FFFFFF',
+        0.2, '#008000',
+      ],
+    };
   }
 
   element.showIndices = (show) => {
@@ -95,7 +123,8 @@ const Indices = ((element) => {
   };
 
   element.selectedIndice = () => {
-    return selectedIndiceBtn.attr('indice');
+    const id = selectedIndiceBtn.attr('indice');
+    return Object.values(INDICES).find(item => item.id == id);
   }
 
   function init() {
