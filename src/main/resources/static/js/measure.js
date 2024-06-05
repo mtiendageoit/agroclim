@@ -32,11 +32,11 @@ const Measure = (function (element) {
     if ($(this).attr('measure') == measureTypeEnum.LineString) {
       otherMeasure = $('#measureAreaBtn');
       $('#measureTypeMeters').text('m');
-      $('#measureTypeKilometers').text('Km');
+      $('#measureTypeKilometers').text('km');
     } else {
       otherMeasure = $('#measureBtn');
       $('#measureTypeMeters').text('m²');
-      $('#measureTypeKilometers').text('Km²');
+      $('#measureTypeKilometers').text('km²');
     }
 
     const active = $(this).hasClass('active');
