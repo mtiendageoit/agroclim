@@ -358,7 +358,7 @@ const Fields = ((element) => {
               <i class="fas fa-seedling text-large text-white"></i>
               <i class="fas fa-seedling text-large" style="color: ${field.borderColor}; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></i>
             </div>
-            <div class="ml-2">
+            <div>
               <p class="font-weight-bold m-0 text-truncate field-list-item-name">${field.name}</p>
               <small class="font-weight-normal">${Measure.areaM2ToHa(field.areaM2)} ha</small>
             </div>
