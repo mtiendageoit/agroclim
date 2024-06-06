@@ -226,13 +226,6 @@ const Measure = (function (element) {
     return output;
   };
 
-  function formatNumber(num) {
-    return Number(num).toLocaleString('en', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
-  }
-
   const source = new ol.source.Vector();
 
   const modify = new ol.interaction.Modify({ source: source, style: modifyStyle });

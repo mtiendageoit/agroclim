@@ -15,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.agroclim.webapp.config.AppConfig;
 import com.agroclim.webapp.field.Field;
 import com.agroclim.webapp.field.images.*;
-import com.agroclim.webapp.google.functions.*;
 import com.agroclim.webapp.indices.Indice;
 
 import lombok.AllArgsConstructor;
@@ -34,13 +33,13 @@ public class GoogleCloudClient {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
 
-    ImageDatesDto requestObject = ImageDatesDto.builder()
+    DatesRequest requestObject = DatesRequest.builder()
         .coords(coords)
         .from(DATE_FORMAT.format(from))
         .to(DATE_FORMAT.format(to))
         .build();
 
-    HttpEntity<ImageDatesDto> requestEntity = new HttpEntity<>(requestObject, headers);
+    HttpEntity<DatesRequest> requestEntity = new HttpEntity<>(requestObject, headers);
 
     String url = config.getGoogleCloudFunctionsUrl() + "/image-dates";
     ResponseEntity<List<FieldImageDateDto>> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
@@ -50,12 +49,12 @@ public class GoogleCloudClient {
     return response.getBody();
   }
 
-  public String processIndiceImageField(Field field, String imageName, Indice indice, LocalDate imageDate) {
+  public FieldImageStatistics processIndiceImageField(Field field, String imageName, Indice indice, LocalDate imageDate) {
     List<List<Double>> coords = coordinatesFromWKT(field.getWkt());
 
     LocalDate to = imageDate.plusDays(1);
 
-    NdviImageRequest requestObject = NdviImageRequest.builder()
+    ImageRequest requestObject = ImageRequest.builder()
         .imageName(imageName)
         .coords(coords)
         .from(DATE_FORMAT.format(imageDate))
@@ -63,9 +62,9 @@ public class GoogleCloudClient {
         .build();
 
     try {
-      ResponseEntity<NdviImageResponse> response = restTemplate.postForEntity(indice.getUrl(), requestObject,
-          NdviImageResponse.class);
-      return response.getBody().getImageName();
+      ResponseEntity<FieldImageStatistics> response = restTemplate.postForEntity(indice.getUrl(), requestObject,
+      FieldImageStatistics.class);
+      return response.getBody();
     } catch (Exception e) {
       e.getMessage();
     }
@@ -95,7 +94,7 @@ public class GoogleCloudClient {
   @Async
   public void deleteFieldImages(List<FieldImage> images) {
     List<String> uuids = images.stream().map(item -> item.getUuid()).toList();
-    FieldImagesDto fieldImages = new FieldImagesDto(uuids);
+    DeleteImagesRequest fieldImages = new DeleteImagesRequest(uuids);
 
     String url = config.getGoogleCloudFunctionsUrl() + "/storage-delete-images";
     restTemplate.postForEntity(url, fieldImages, String.class);

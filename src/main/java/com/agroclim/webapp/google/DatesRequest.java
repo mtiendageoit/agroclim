@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ImageDatesDto {
+public class DatesRequest {
   private List<List<Double>> coords;
   private String from;
   private String to;

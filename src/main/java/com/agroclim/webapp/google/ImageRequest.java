@@ -1,4 +1,4 @@
-package com.agroclim.webapp.google.functions;
+package com.agroclim.webapp.google;
 
 import java.util.List;
 
@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class NdviImageRequest {
+public class ImageRequest {
   private String imageName;
   private String from;
   private String to;

@@ -29,7 +29,7 @@ public class AppController {
     model.addAttribute("principal", principal);
     model.addAttribute("crops", cropService.crops());
     model.addAttribute("indices", indiceService.indices());
-    model.addAttribute("imagesUrl", config.getGoogleCloudStorageImagesUrl());
+    model.addAttribute("imagesUrl", config.getGoogleCloudStorageImagesUrl() + "/field-images");
     return "home";
   }
 

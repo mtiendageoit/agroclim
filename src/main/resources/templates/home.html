@@ -38,7 +38,7 @@
     window.App = {};
     window.App.ImagesUrl = /*[[${imagesUrl}]]*/ null;
   </script>
-   <script src="https://unpkg.com/shpjs@latest/dist/shp.js"></script>
+  <script src="https://unpkg.com/shpjs@latest/dist/shp.js"></script>
 </head>
 
 <body>
@@ -99,7 +99,8 @@
                         <li class="dropright">
                           <div class="d-inline-flex align-items-center align-middle w-100 px-2 py-1 mb-1 menu-item"
                             data-toggle="dropdown" aria-expanded="true" data-boundary="viewport">
-                            <img th:src="${principal.avatar != null ? principal.avatar : '/img/profile-img.png'}" alt="" class="d-block ui-w-40 rounded-circle">
+                            <img th:src="${principal.avatar != null ? principal.avatar : '/img/profile-img.png'}" alt=""
+                              class="d-block ui-w-40 rounded-circle">
                             <span class="px-1 flex-grow-1 text-truncate principal-name">[[${principal.name}]]</span>
                             <i class="fas fa-angle-right d-block"></i>
                           </div>
@@ -192,6 +193,50 @@
                           <div class="rounded bg-dark text-center text-white d-flex flex-row p-2">
                             <button id="cancelFieldGeometry" class="btn rounded btn-secondary px-5">Cancelar</button>
                             <button id="saveFieldGeometry" class="btn rounded btn-success px-5">Guardar</button>
+                          </div>
+                        </div>
+
+                        <div id="legendContainer" class="mb-3"
+                          style="position:absolute; bottom: 0px; left: 15px; z-index: 1;display: none;">
+                          <div class="rounded bg-dark text-center text-white d-flex p-2 align-items-center">
+                            <div class="d-flex flex-column">
+                              <div id="legendTitleBar" class="d-flex flex-row justify-content-between"
+                                style="cursor: pointer;">
+                                <h5 class="m-0">Leyenda</h5>
+                                <i class="fas fa-angle-double-down d-block"></i>
+                              </div>
+                              <div id="legendBody">
+                                <hr class="m-0 mb-1 bg-white opacity-25">
+                                <div class="text-left mx-2">
+                                  <h5 id="legendIndicenName" class="m-0 my-2">NDVI</h5>
+                                  <div class="d-flex">
+                                    <div class="d-flex flex-column flex-grow-1 align-items-center" style="gap: 0;">
+                                      <span id="legendIndiceMax">...</span>
+                                      <div class="flex-grow-1 indice-legend-colors"></div>
+                                      <span id="legendIndiceMin">...</span>
+                                    </div>
+                                    <table class="ml-3 indice-statistics-table">
+                                      <tr>
+                                        <td><span>Máximo:</span>&nbsp;</td>
+                                        <td><span id="legendStatisticsMax">...</span></td>
+                                      </tr>
+                                      <tr>
+                                        <td><span>Media:</span>&nbsp;</td>
+                                        <td><span id="legendStatisticsMean">...</span></td>
+                                      </tr>
+                                      <tr>
+                                        <td><span>Mediana:</span>&nbsp;</td>
+                                        <td><span id="legendStatisticsMedian">...</span></td>
+                                      </tr>
+                                      <tr>
+                                        <td><span>Mínimo:</span>&nbsp;</td>
+                                        <td><span id="legendStatisticsMin">...</span></td>
+                                      </tr>
+                                    </table>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
 

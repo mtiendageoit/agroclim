@@ -1,10 +1,8 @@
 package com.agroclim.webapp.profile;
 
-import java.io.ObjectInputFilter.Config;
 import java.util.*;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.agroclim.webapp.config.AppConfig;

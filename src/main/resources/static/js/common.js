@@ -48,6 +48,13 @@ const validateMaxFileSizeMB = (file, maxFileSizeMB) => {
   }
 }
 
+const formatNumber = (num, fractionDigits = 2) => {
+  return Number(num).toLocaleString('en', {
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits
+  });
+}
+
 const validateFileExt = (file, validExts) => {
   const ext = file.name.substring(file.name.lastIndexOf('.') + 1);
   const valid = validExts

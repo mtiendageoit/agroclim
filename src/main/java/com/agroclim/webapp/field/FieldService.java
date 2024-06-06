@@ -100,10 +100,9 @@ public class FieldService {
 
     Indice indice = indiceRepository.findById(indiceId)
         .orElseThrow(() -> new NotFoundException("indice-not-exists", "The indice id not exists"));
-    // process field image in google cloud funcions
 
     String imageUuid = RandomCodeGenerator.generateUUIDCode();
-    googleCloudClient.processIndiceImageField(field, imageUuid, indice, from);
+    FieldImageStatistics stats = googleCloudClient.processIndiceImageField(field, imageUuid, indice, from);
 
     FieldImage fieldImage = FieldImage.builder()
         .uuid(imageUuid)
@@ -111,9 +110,8 @@ public class FieldService {
         .indiceId(indiceId)
         .userId(principal.getId())
         .imageDate(from)
-        .status(ImageStatus.CREATED)
         .fieldVersion(field.getVersion())
-        .processStarting(new Date())
+        .stats(stats.toJsonString())
         .build();
 
     fieldImage = fieldImageRepository.save(fieldImage);

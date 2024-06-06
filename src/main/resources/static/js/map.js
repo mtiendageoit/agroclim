@@ -388,10 +388,11 @@ const OlMapField = ((element) => {
     const indiceId = Indices.selectedIndice().id;
     const field = processFeature.get('field');
 
+    Indices.loadingLegend();
     const url = `api/fields/${field.uuid}/image?indice=${indiceId}&from=${from}`;
-
     $.post(url).done((image) => {
       addFieldImageToMap(image);
+      Indices.showIndiceFieldStatistics(JSON.parse(image.stats));
     }).fail(() => {
       toastr.warning(`Ocurrio un error al ejecutar la acción, intente nuevamente más tarde.`);
     }).always(() => {

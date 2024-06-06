@@ -6,6 +6,6 @@ import lombok.*;
 
 @Data
 @AllArgsConstructor
-public class FieldImagesDto {
+public class DeleteImagesRequest {
   private List<String> images;
 }

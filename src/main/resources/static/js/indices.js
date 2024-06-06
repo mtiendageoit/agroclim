@@ -1,12 +1,26 @@
 const Indices = ((element) => {
   const INDICES = {
-    NDVI: { id: 1, name: 'NDVI' }, EVI: { id: 2, name: 'EVI' }, AVI: { id: 3, name: 'AVI' },
-    SAVI: { id: 4, name: 'SAVI' }, MSI: { id: 5, name: 'MSI' }, VCI: { id: 6, name: 'VCI' }, VHI: { id: 7, name: 'VHI' }
+    NDVI: { id: 1, name: 'NDVI', min: '-0.2', max: '0.2', colors: ['#FF0000', '#FFFFFF', '#008000'] },
+    EVI: { id: 2, name: 'EVI', min: '-1.0', max: '1.0', colors: ['#0000FF', '#FFFFFF', '#008000'] },
+    AVI: { id: 3, name: 'AVI', min: '0.0', max: '1.0', colors: ['#0000FF', '#FFFFFF', '#008000'] },
+    SAVI: { id: 4, name: 'SAVI', min: '-1.0', max: '1.0', colors: ['#A52A2A', '#FFFFFF', '#008000'] },
+    MSI: { id: 5, name: 'MSI', min: '0.0', max: '2.0', colors: ['#A52A2A', '#FFFFFF', '#0000FF'] },
+    VCI: { id: 6, name: 'VCI', min: '0.0', max: '100.0', colors: ['#FF0000', '#FFFF00', '#008000'] },
+    VHI: { id: 7, name: 'VHI', min: '0.0', max: '1.0', colors: ['#A52A2A', '#FFFF00', '#008000'] }
   }
   const indicesBtns = $('.indice-menu-item');
   const selectedIndiceBtn = $('#selectedIndiceBtn');
   const container = $('#indicesListContainer');
-
+  const legendTitleBar = $('#legendTitleBar');
+  const legendBody = $('#legendBody');
+  const legend = $('#legendContainer');
+  const legendIndicenName = $('#legendIndicenName');
+  const legendIndiceMax = $('#legendIndiceMax');
+  const legendIndiceMin = $('#legendIndiceMin');
+  const legendStatisticsMax = $('#legendStatisticsMax');
+  const legendStatisticsMean = $('#legendStatisticsMean');
+  const legendStatisticsMedian = $('#legendStatisticsMedian');
+  const legendStatisticsMin = $('#legendStatisticsMin');
 
   element.getSelectedIndiceStyle = () => {
     const indice = element.selectedIndice();
@@ -118,8 +132,13 @@ const Indices = ((element) => {
   }
 
   element.showIndices = (show) => {
-    if (show) container.show();
-    else container.hide();
+    if (show) {
+      container.show();
+      legend.show();
+    } else {
+      container.hide();
+      legend.hide();
+    }
   };
 
   element.selectedIndice = () => {
@@ -129,8 +148,20 @@ const Indices = ((element) => {
 
   function init() {
     indicesBtns.click(onIndiceClick);
+    legendTitleBar.click(onLegendTitleBarClick)
 
     selectFirstIndice();
+  }
+
+  function onLegendTitleBarClick() {
+    legendBody.toggle();
+
+    if (legendBody.is(':visible')) {
+      legendTitleBar.find('i').removeClass('fa-angle-double-up').addClass('fa-angle-double-down');
+    } else {
+      legendTitleBar.find('i').removeClass('fa-angle-double-down').addClass('fa-angle-double-up');
+    }
+
   }
 
   function selectFirstIndice() {
@@ -157,6 +188,29 @@ const Indices = ((element) => {
 
     OlMapField.getImageForSelectedField();
   }
+
+  element.loadingLegend = () => {
+    const indice = element.selectedIndice();
+    legendIndicenName.text(indice.name);
+    legendIndiceMax.text(indice.max);
+    legendIndiceMin.text(indice.min);
+
+    const background = `linear-gradient(0deg, ${indice.colors[0]} 0%, ${indice.colors[1]} 50%, ${indice.colors[2]} 100%);`;
+    document.getElementsByClassName('indice-legend-colors')[0].setAttribute("style", `background:${background}`);
+
+    const loadingText = '-------';
+    legendStatisticsMax.text(loadingText);
+    legendStatisticsMean.text(loadingText);
+    legendStatisticsMedian.text(loadingText);
+    legendStatisticsMin.text(loadingText);
+  };
+
+  element.showIndiceFieldStatistics = (stats) => {
+    legendStatisticsMax.text(formatNumber(stats.max));
+    legendStatisticsMean.text(formatNumber(stats.mean));
+    legendStatisticsMedian.text(formatNumber(stats.median));
+    legendStatisticsMin.text(formatNumber(stats.min));
+  };
 
   init();
 
