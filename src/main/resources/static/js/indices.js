@@ -1,7 +1,7 @@
 const Indices = ((element) => {
   const INDICES = {
-    NDVI: { id: 1, name: 'NDVI', min: '-0.2', max: '0.2', colors: ['#FF0000', '#FFFFFF', '#008000'] },
-    EVI: { id: 2, name: 'EVI', min: '-1.0', max: '1.0', colors: ['#0000FF', '#FFFFFF', '#008000'] },
+    NDVI: { id: 1, name: 'NDVI', min: '-1.0', max: '1.0', colors: ['#FF0000', '#FFFFFF', '#008000'] },
+    EVI: { id: 2, name: 'EVI', min: '0.0', max: '12.0', colors: ['#0000FF', '#FFFFFF', '#008000'] },
     AVI: { id: 3, name: 'AVI', min: '0.0', max: '1.0', colors: ['#0000FF', '#FFFFFF', '#008000'] },
     SAVI: { id: 4, name: 'SAVI', min: '-1.0', max: '1.0', colors: ['#A52A2A', '#FFFFFF', '#008000'] },
     MSI: { id: 5, name: 'MSI', min: '0.0', max: '2.0', colors: ['#A52A2A', '#FFFFFF', '#0000FF'] },
@@ -110,9 +110,9 @@ const Indices = ((element) => {
         ['linear'],
         ['band', 1],
         -9999, 'Transparent',
-        -1, '#0000FF',
-        0, '#FFFFFF',
-        1, '#008000',
+        0, '#0000FF',
+        6, '#FFFFFF',
+        12, '#008000',
       ],
     };
   }
@@ -124,9 +124,9 @@ const Indices = ((element) => {
         ['linear'],
         ['band', 1],
         -9999, 'Transparent',
-        -0.2, '#FF0000',
-        0, '#FFFFFF',
-        0.2, '#008000',
+        -1.0, '#a52a2a',
+        0, '#ffff00',
+        1.0, '#008000',
       ],
     };
   }

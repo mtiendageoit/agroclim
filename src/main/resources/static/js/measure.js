@@ -1,5 +1,3 @@
-
-
 const Measure = (function (element) {
   let olMap;
   const measureLayerType = 'measure-layer';
