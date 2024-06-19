@@ -8,7 +8,7 @@ const Weather = ((element) => {
     dayContainer.click(onDayContainerClick);
     weatherCharts.click(onWeatherChartsClick);
 
-    onDayContainerClick();
+    // onDayContainerClick();
   }
 
   function onWeatherChartsClick() {
