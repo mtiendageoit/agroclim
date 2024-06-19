@@ -1,19 +1,28 @@
 const Weather = ((element) => {
   const dayContainer = $('#dayWeatherContainer');
   const weatherModal = $('#weatherModal');
-  const variables = $('.weatherVariable');
+  const weatherCharts = $('.weatherVariable');
 
 
   function init() {
     dayContainer.click(onDayContainerClick);
-    variables.click(onVariableClick);
+    weatherCharts.click(onWeatherChartsClick);
 
     onDayContainerClick();
   }
 
-  function onVariableClick() {
-    variables.parent().removeClass('btn-success').addClass('btn-default');
+  function onWeatherChartsClick() {
+    weatherCharts.parent().removeClass('btn-success').addClass('btn-default');
     $(this).parent().removeClass('btn-default').addClass('btn-success');
+
+    $('#temperatureChart,#humidityChart,#precipitationChart,#windChart').hide();
+    const chart = $(this).attr('chart');
+    $(`#${chart}`).show();
+  }
+
+  function resetModal() {
+    $('#humidityChart,#precipitationChart,#windChart').hide();
+    $('#temperatureChart').show();
   }
 
   function onDayContainerClick() {
