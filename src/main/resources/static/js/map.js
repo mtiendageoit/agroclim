@@ -409,11 +409,11 @@ const OlMapField = ((element) => {
     if (processFeature) {
       if (loading) {
         element.activeMouseEvents(false);
-        Notifications.loading(true);
+        // Notifications.loading(true);
         OlAnimateLoadingFeature.animate(processFeature);
       } else {
         element.activeMouseEvents(true);
-        Notifications.loading(false);
+        // Notifications.loading(false);
         OlAnimateLoadingFeature.endAnimation();
       }
     }
@@ -500,34 +500,62 @@ const OlAnimateLoadingFeature = ((element) => {
 
   element.animate = (f) => {
     feature = f;
-    let offset = 0;
-    feature.setStyle(style(offset));
+    let points = 0;
+    feature.setStyle(style(points));
 
     timer = setInterval(() => {
-      feature.setStyle(style(offset += 0.5));
-    }, 50);
+      points += 1;
+      if (points > 3) points = 0;
+
+      feature.setStyle(style(points));
+    }, 400);
 
   };
 
-  function style(offset) {
+  function style(points) {
+    let loading = ' .'.repeat(points);
+    loading += '  '.repeat(3 - points)
+
+    console.log(`len = ${loading.length}`);
+
     return new ol.style.Style({
-      fill: new ol.style.FillPattern({
-        pattern: "hatch",
-        ratio: 1,
-        color: "rgba(255, 255, 255, 0.2)",
-        offset: offset,
-        scale: 2,
-        fill: new ol.style.Fill({ color: "rgba(255, 0, 0, 0)" }),
-        size: 5,
-        spacing: 10,
-        angle: 0
+      fill: new ol.style.Fill({
+        color: [33, 150, 83, 0.8]
       }),
       stroke: new ol.style.Stroke({
         color: [255, 255, 255, 1],
         width: 5,
       }),
+      text: new ol.style.Text({
+        text: `Procesando${loading}`,
+        font: 'bold 25px Calibri,sans-serif',
+        fill: new ol.style.Fill({
+          color: 'black',
+        }),
+        stroke: new ol.style.Stroke({
+          color: 'white',
+          width: 2,
+        }),
+      }),
     });
   }
+
+
+  // return [new ol.style.Style({
+  //   fill: new ol.style.Fill({
+  //     color: [255, 255, 255, 0.05],
+  //   }),
+  // }), new ol.style.Style({
+  //   stroke: new ol.style.Stroke({
+  //     color: [255, 255, 255, 1],
+  //     width: 5,
+  //   }),
+  // }), new ol.style.Style({
+  //   stroke: new ol.style.Stroke({
+  //     color: [0, 153, 255, 1],
+  //     width: 3,
+  //   }),
+  // })];
 
   return element;
 })({});
