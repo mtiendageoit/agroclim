@@ -287,6 +287,10 @@ const OlMapField = ((element) => {
     olMap.getViewport().style.cursor = active ? 'pointer' : '';
   }
 
+  element.setIndiceImageOpacity = (opacity) => {
+    imageLayer.setOpacity(opacity);
+  };
+
   function activePointerMove(active) {
     if (active) {
       olMap.on('pointermove', pointerMoveListener);

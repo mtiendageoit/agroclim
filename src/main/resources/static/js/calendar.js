@@ -1,12 +1,6 @@
 const CalendarImages = (function (element) {
   const calendarImages = $('#calendarImages');
-  const container = $('#calendarImagesContainer');
   let currentDates;
-
-  element.showCalendar = (show) => {
-    if (show) container.show();
-    else container.hide();
-  };
 
   element.setDates = (dates) => {
     disabled();
@@ -18,7 +12,6 @@ const CalendarImages = (function (element) {
       calendarImages.datepicker('setStartDate', startDate);
     }
 
-    element.showCalendar(hasDates);
     Indices.showIndices(hasDates);
   };
 

@@ -127,30 +127,50 @@
                         <div id="tooltip" class="ol-popup">
                         </div>
 
-                        <div id="indicesListContainer" class="mb-3"
-                          style="position:absolute; top: 15px; left: 15px; z-index: 1; display: none;">
-                          <div data-toggle="dropdown" aria-expanded="true">
-                            <div class="rounded-pill text-center text-white px-4 py-2 d-flex menu-btn">
-                              <h6 id="selectedIndiceBtn" indice="" class="my-0 p-0" style="line-height: 1;">Ver Índice
-                              </h6>
+                        <div class="header-bar-container" style="position:absolute; top: 8px; left: 15px; z-index: 1;">
+                          <div class="d-flex align-items-center">
+                            <div class="">
+                              <div data-toggle="dropdown" aria-expanded="true">
+                                <div class="rounded-pill text-center text-white px-4 py-2 d-flex menu-btn">
+                                  <h6 class="my-1 p-0" style="line-height: 1;">
+                                    <span id="selectedIndiceBtn" indice="">NDVI</span>
+                                  </h6>
+                                </div>
+                              </div>
+                              <div class="dropdown-menu">
+                                <a href="javascript:void(0)" class="dropdown-item indice-menu-item"
+                                  th:attr="indice=${indice.id},indice-name=${indice.name}"
+                                  th:each="indice : ${indices}">
+                                  <i class="ion ion-md-checkmark mr-1" style="display:none;"></i>
+                                  <span>[[${indice.name}]]</span>
+                                </a>
+                              </div>
                             </div>
-                          </div>
-                          <div class="dropdown-menu">
-                            <a href="javascript:void(0)" class="dropdown-item indice-menu-item"
-                              th:attr="indice=${indice.id},indice-name=${indice.name}" th:each="indice : ${indices}">
-                              <i class="ion ion-md-checkmark mr-1" style="display:none;"></i>
-                              <span>[[${indice.name}]]</span>
-                            </a>
+                            <div class="search-btn-input-container ml-3">
+                              <label class="nav-item navbar-text navbar-search-box pl-3 py-0 active shadow"
+                                style="border-radius: 10rem;">
+                                <i class="ion ion-ios-search navbar-icon align-middle text-success"></i>
+                                <span class="navbar-search-input w-100">
+                                  <input id="search-input" type="text" class="form-control navbar-text mx-2 w-100"
+                                    placeholder="Buscar..." autocomplete="off">
+                                </span>
+                                <button id="search-remove-search" type="button"
+                                  class="btn btn-default borderless rounded-pill text-success"
+                                  style="display: none;">×</button>
+                              </label>
+                            </div>
                           </div>
                         </div>
 
+
+
                         <div id="calendarImagesContainer" class="mb-3"
-                          style="position:absolute; top: 15px; right: 15px; z-index: 1; display: none;">
+                          style="position:absolute; top: 15px; right: 15px; z-index: 1;">
                           <div class="rounded p-2">
                             <div id="calendarImages" class="rounded bg-white"></div>
                           </div>
                         </div>
-
+                        
                         <div id="mapTools" class="mr-3"
                           style="position: fixed; top: 50%; right: 0; transform: translateY(-50%);">
                           <div class="bg-white rounded border text-white d-flex flex-column" style="gap: 0;">
@@ -198,18 +218,21 @@
                         </div>
 
                         <div id="legendContainer" class="mb-3"
-                          style="position:absolute; bottom: 0px; left: 15px; z-index: 1;display: none;">
+                          style="position:absolute; bottom: 0px; left: 15px; z-index: 1; display: none;">
                           <div class="rounded bg-dark text-center text-white d-flex p-2 align-items-center">
                             <div class="d-flex flex-column">
                               <div id="legendTitleBar" class="d-flex flex-row justify-content-between"
                                 style="cursor: pointer;">
-                                <h5 class="m-0">Leyenda</h5>
+                                <h5 class="m-0 mr-2">Leyenda</h5>
                                 <i class="fas fa-angle-double-down d-block"></i>
                               </div>
                               <div id="legendBody">
-                                <hr class="m-0 mb-1 bg-white opacity-25">
+                                <hr class="m-0 my-1 bg-white opacity-25">
                                 <div class="text-left mx-2">
-                                  <h5 id="legendIndicenName" class="m-0 my-2">NDVI</h5>
+                                  <div class="d-flex justify-content-between align-items-center">
+                                    <h5 id="legendIndicenName" class="m-0 my-2">NDVI</h5>
+                                    <input id="indiceOpacity" class="bs-item-range" type="range" min="0" max="1" step="0.01" value="1">
+                                  </div>
                                   <div class="d-flex">
                                     <div class="d-flex flex-column flex-grow-1 align-items-center" style="gap: 0;">
                                       <span id="legendIndiceMax">...</span>
@@ -464,7 +487,8 @@
                           </div>
                         </div>
                       </td>
-                      <td><div class="card card-body">
+                      <td>
+                        <div class="card card-body">
                           <h6 class="m-0">Martes</h6>
                           <p>18 Jun</p>
                           <div class="text-center d-flex align-items-center" style="gap: 0;">
@@ -488,8 +512,10 @@
                             <div class="ion ion-ios-leaf mr-2 mb-1"></div>
                             <p class="m-0">-4 <sup>o</sup>C</p>
                           </div>
-                        </div></td>
-                      <td><div class="card card-body">
+                        </div>
+                      </td>
+                      <td>
+                        <div class="card card-body">
                           <h6 class="m-0">Miercoles</h6>
                           <p>19 Jun</p>
                           <div class="text-center d-flex align-items-center" style="gap: 0;">
@@ -513,8 +539,10 @@
                             <div class="ion ion-ios-leaf mr-2 mb-1"></div>
                             <p class="m-0">-4 <sup>o</sup>C</p>
                           </div>
-                        </div></td>
-                      <td><div class="card card-body">
+                        </div>
+                      </td>
+                      <td>
+                        <div class="card card-body">
                           <h6 class="m-0">Jueves</h6>
                           <p>20 Jun</p>
                           <div class="text-center d-flex align-items-center" style="gap: 0;">
@@ -538,8 +566,10 @@
                             <div class="ion ion-ios-leaf mr-2 mb-1"></div>
                             <p class="m-0">-4 <sup>o</sup>C</p>
                           </div>
-                        </div></td>
-                      <td><div class="card card-body">
+                        </div>
+                      </td>
+                      <td>
+                        <div class="card card-body">
                           <h6 class="m-0">Viernes</h6>
                           <p>21 Jun</p>
                           <div class="text-center d-flex align-items-center" style="gap: 0;">
@@ -563,8 +593,10 @@
                             <div class="ion ion-ios-leaf mr-2 mb-1"></div>
                             <p class="m-0">-4 <sup>o</sup>C</p>
                           </div>
-                        </div></td>
-                      <td><div class="card card-body">
+                        </div>
+                      </td>
+                      <td>
+                        <div class="card card-body">
                           <h6 class="m-0">Sabado</h6>
                           <p>22 Jun</p>
                           <div class="text-center d-flex align-items-center" style="gap: 0;">
@@ -588,8 +620,10 @@
                             <div class="ion ion-ios-leaf mr-2 mb-1"></div>
                             <p class="m-0">-4 <sup>o</sup>C</p>
                           </div>
-                        </div></td>
-                      <td><div class="card card-body">
+                        </div>
+                      </td>
+                      <td>
+                        <div class="card card-body">
                           <h6 class="m-0">Domingo</h6>
                           <p>23 Jun</p>
                           <div class="text-center d-flex align-items-center" style="gap: 0;">
@@ -613,7 +647,8 @@
                             <div class="ion ion-ios-leaf mr-2 mb-1"></div>
                             <p class="m-0">-4 <sup>o</sup>C</p>
                           </div>
-                        </div></td>
+                        </div>
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -624,6 +659,10 @@
       </div>
     </div>
   </div>
+
+  <script async
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAzyZ50tbSNLrkRoXiZEkdM_K5DmRNO57U&loading=async&libraries=places">
+    </script>
 
   <script src="https://cdn.jsdelivr.net/npm/ol@v9.2.2/dist/ol.js"></script>
   <script src="https://viglino.github.io/ol-ext/dist/ol-ext.min.js"></script>
@@ -648,6 +687,7 @@
   <script src="js/notifications.js"></script>
   <script src="js/calendar.js"></script>
   <script src="js/weather.js"></script>
+  <script src="js/search.js"></script>
 </body>
 
 </html>

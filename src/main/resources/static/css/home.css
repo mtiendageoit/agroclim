@@ -17,6 +17,10 @@ body,
   background-color: #f2f2f7;
 }
 
+.field-list-item.active {
+  background-color: #e3e3e3;
+}
+
 .field-list-item-name {
   line-height: normal;
   max-width: 11rem;
@@ -29,10 +33,6 @@ body,
 .spinner-grow-xs {
   width: 0.5rem;
   height: 0.5rem;
-}
-
-.d-flex {
-  gap: 0.5rem;
 }
 
 .map-tool-item {
@@ -88,28 +88,6 @@ body,
   color: white;
 }
 
-.search-btn-input-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.search-btn-input-container .search-btn-form-control {
-  width: 100%;
-  padding-right: 30px;
-  /* Make space for the close button */
-}
-
-.search-btn-input-container .search-btn-close {
-  position: absolute;
-  right: 10px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-}
-
 .ol-popup {
   position: absolute;
   text-align: center;
@@ -118,8 +96,8 @@ body,
   padding: 5px;
   border-radius: 6px;
   bottom: 9px;
-  left: -50px;
-  width: 85px;
+  left: -55px;
+  width: 90px;
 }
 
 .ol-popup:after {
@@ -135,7 +113,7 @@ body,
 .ol-popup:after {
   border-top-color: rgba(0, 0, 0, .7);
   border-width: 8px;
-  left: 32px;
+  left: 37px;
 }
 
 .indice-statistics-table {
@@ -145,4 +123,64 @@ body,
 
 .indice-legend-colors {
   width: 15px;
+}
+
+
+
+.field-search {
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  outline: none;
+  padding: 5px 0;
+  transition: border-color 0.3s;
+}
+
+.field-search:focus {
+  border-color: #02bc77;
+  box-shadow: 0 -1px 0 0 #02bc77 inset
+}
+
+.navbar-search-box {
+  background: #ffffff;
+  width: 330px;
+}
+
+.pac-container {
+  margin-left: -25px !important;
+  width: 300px !important;
+}
+
+
+.search-btn-close {
+  margin-top: -31px;
+  margin-right: 10px;
+}
+
+.bs-item-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 7px;
+  border-radius: 5px;
+  background: white;
+  outline: none;
+  cursor: pointer;
+  width: 85px;
+}
+
+.bs-item-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #219653;
+  cursor: pointer;
+}
+
+.bs-item-range::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #219653;
+  cursor: pointer;
 }

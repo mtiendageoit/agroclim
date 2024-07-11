@@ -10,10 +10,10 @@ const Indices = ((element) => {
   }
   const indicesBtns = $('.indice-menu-item');
   const selectedIndiceBtn = $('#selectedIndiceBtn');
-  const container = $('#indicesListContainer');
   const legendTitleBar = $('#legendTitleBar');
   const legendBody = $('#legendBody');
   const legend = $('#legendContainer');
+  const indiceOpacity = $('#indiceOpacity');
   const legendIndicenName = $('#legendIndicenName');
   const legendIndiceMax = $('#legendIndiceMax');
   const legendIndiceMin = $('#legendIndiceMin');
@@ -133,10 +133,8 @@ const Indices = ((element) => {
 
   element.showIndices = (show) => {
     if (show) {
-      container.show();
       legend.show();
     } else {
-      container.hide();
       legend.hide();
     }
   };
@@ -149,8 +147,13 @@ const Indices = ((element) => {
   function init() {
     indicesBtns.click(onIndiceClick);
     legendTitleBar.click(onLegendTitleBarClick)
+    indiceOpacity.on('input', onIndiceOpacityChange);
 
     selectFirstIndice();
+  }
+  function onIndiceOpacityChange(e) {
+    const value = indiceOpacity.val();
+    OlMapField.setIndiceImageOpacity(parseFloat(value));
   }
 
   function onLegendTitleBarClick() {
