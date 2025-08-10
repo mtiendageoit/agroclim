@@ -209,10 +209,10 @@ const Indices = ((element) => {
   };
 
   element.showIndiceFieldStatistics = (stats) => {
-    legendStatisticsMax.text(formatNumber(stats.max));
-    legendStatisticsMean.text(formatNumber(stats.mean));
-    legendStatisticsMedian.text(formatNumber(stats.median));
-    legendStatisticsMin.text(formatNumber(stats.min));
+    legendStatisticsMax.text(formatNumber(stats?.max));
+    legendStatisticsMean.text(formatNumber(stats?.mean));
+    legendStatisticsMedian.text(formatNumber(stats?.median));
+    legendStatisticsMin.text(formatNumber(stats?.min));
   };
 
   init();

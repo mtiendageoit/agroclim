@@ -104,6 +104,11 @@ public class FieldService {
     String imageUuid = RandomCodeGenerator.generateUUIDCode();
     FieldImageStatistics stats = googleCloudClient.processIndiceImageField(field, imageUuid, indice, from);
 
+    String statsJson = "{}";
+    if (stats != null) {
+      statsJson = stats.toJsonString();
+    }
+
     FieldImage fieldImage = FieldImage.builder()
         .uuid(imageUuid)
         .fieldId(field.getId())
@@ -111,7 +116,7 @@ public class FieldService {
         .userId(principal.getId())
         .imageDate(from)
         .fieldVersion(field.getVersion())
-        .stats(stats.toJsonString())
+        .stats(statsJson)
         .build();
 
     fieldImage = fieldImageRepository.save(fieldImage);
