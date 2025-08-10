@@ -1,5 +1,6 @@
 $(function () {
   $.ajaxSetup({
+    timeout: 1_800_000, //30 min
     statusCode: {
       401: function () {
         location.reload();
@@ -93,7 +94,7 @@ Highcharts.setOptions({
     months: ['Enero', 'Febrero', 'Marco', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
     shortMonths: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
     weekdays: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
-    shortWeekdays:["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"]
+    shortWeekdays: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"]
   }
 });
 

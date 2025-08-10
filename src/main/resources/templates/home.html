@@ -170,7 +170,7 @@
                             <div id="calendarImages" class="rounded bg-white"></div>
                           </div>
                         </div>
-                        
+
                         <div id="mapTools" class="mr-3"
                           style="position: fixed; top: 50%; right: 0; transform: translateY(-50%);">
                           <div class="bg-white rounded border text-white d-flex flex-column" style="gap: 0;">
@@ -231,7 +231,8 @@
                                 <div class="text-left mx-2">
                                   <div class="d-flex justify-content-between align-items-center">
                                     <h5 id="legendIndicenName" class="m-0 my-2">NDVI</h5>
-                                    <input id="indiceOpacity" class="bs-item-range" type="range" min="0" max="1" step="0.01" value="1">
+                                    <input id="indiceOpacity" class="bs-item-range" type="range" min="0" max="1"
+                                      step="0.01" value="1">
                                   </div>
                                   <div class="d-flex">
                                     <div class="d-flex flex-column flex-grow-1 align-items-center" style="gap: 0;">
@@ -660,9 +661,8 @@
     </div>
   </div>
 
-  <script 
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDGMCnhWxXekx2FrmKm8qS5ho5oWaFjetg&loading=async&libraries=places">
-    </script>
+  <script
+    th:src="|https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&loading=async&libraries=places|"></script>
 
   <script src="https://cdn.jsdelivr.net/npm/ol@v9.2.2/dist/ol.js"></script>
   <script src="https://viglino.github.io/ol-ext/dist/ol-ext.min.js"></script>

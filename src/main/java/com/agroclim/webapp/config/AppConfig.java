@@ -11,6 +11,9 @@ import lombok.Getter;
 @Configuration
 public class AppConfig {
 
+  @Value("${apis.google.maps.key}")
+  private String googleMapsApiKey;
+
   @Value("${google.cloud.functions.url}")
   private String googleCloudFunctionsUrl;
 
