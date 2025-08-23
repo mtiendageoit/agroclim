@@ -12,8 +12,8 @@ public class HttpConfig {
   @Bean
   public RestTemplate restTemplate(RestTemplateBuilder builder) {
     return builder
-        .setConnectTimeout(Duration.ofSeconds(60))
-        .setReadTimeout(Duration.ofMinutes(30))
+        .setConnectTimeout(Duration.ofMinutes(60))
+        .setReadTimeout(Duration.ofMinutes(60))
         .build();
   }
 }
