@@ -6,7 +6,9 @@ const Indices = ((element) => {
     SAVI: { id: 4, name: 'SAVI', min: '-1.0', max: '1.0', colors: ['#A52A2A', '#FFFFFF', '#008000'] },
     MSI: { id: 5, name: 'MSI', min: '0.0', max: '2.0', colors: ['#A52A2A', '#FFFFFF', '#0000FF'] },
     VCI: { id: 6, name: 'VCI', min: '0.0', max: '100.0', colors: ['#FF0000', '#FFFF00', '#008000'] },
-    VHI: { id: 7, name: 'VHI', min: '0.0', max: '1.0', colors: ['#A52A2A', '#FFFF00', '#008000'] }
+    VHI: { id: 7, name: 'VHI', min: '0.0', max: '1.0', colors: ['#A52A2A', '#FFFF00', '#008000'] },
+    NDSSI: { id: 8, name: 'NDSSI', min: '-1.0', max: '1.0', colors: ['#0000FF', '#FFFFFF', '#A52A2A'] },
+    TSS: { id: 9, name: 'TSS', min: '0.0', max: '100.0', colors: ['#0000FF', '#008000', '#FFFF00', '#FF0000'] },
   }
   const indicesBtns = $('.indice-menu-item');
   const selectedIndiceBtn = $('#selectedIndiceBtn');
@@ -31,7 +33,38 @@ const Indices = ((element) => {
     if (INDICES.MSI == indice) return msiStyle();
     if (INDICES.VCI == indice) return vciStyle();
     if (INDICES.VHI == indice) return vhiStyle();
+    if (INDICES.NDSSI == indice) return ndssiStyle();
+    if (INDICES.TSS == indice) return tssStyle();
   };
+
+    function tssStyle() {
+    return {
+      color: [
+        'interpolate',
+        ['linear'],
+        ['band', 1],
+        -9999, 'Transparent',
+        0.0, '#0000FF',
+        33.3, '#008000',
+        66.6, '#FFFF00',
+        100.0, '#FF0000',
+      ],
+    };
+  }
+
+  function ndssiStyle() {
+    return {
+      color: [
+        'interpolate',
+        ['linear'],
+        ['band', 1],
+        -9999, 'Transparent',
+        -1, '#0000FF',
+        0.0, '#FFFFFF',
+        1, '#A52A2A',
+      ],
+    };
+  }
 
   function vhiStyle() {
     return {

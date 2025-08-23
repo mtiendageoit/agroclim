@@ -2,7 +2,7 @@ const Search = ((element) => {
   const removeSearchBtn = $('#search-remove-search');
   const searchInput = $('#search-input');
   const gAutocompleteOptions = {
-    componentRestrictions: { country: "mx" },
+    // componentRestrictions: { country: "mx" },
     fields: ["geometry", "name"],
     strictBounds: false,
   };
