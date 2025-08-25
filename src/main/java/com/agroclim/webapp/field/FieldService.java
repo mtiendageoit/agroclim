@@ -103,7 +103,8 @@ public class FieldService {
     Indice indice = indiceRepository.findById(indiceId)
         .orElseThrow(() -> new NotFoundException("indice-not-exists", "The indice id not exists"));
 
-    log.info("Processing image for field {}: {} - {} - {}", uuid, indiceId, from, principal.getId());
+    log.info("Procesando imagen para el predio con uuid: {}, indice: {}, fecha: {}, usuario: {}", uuid,
+        indice.getName(), from, principal.getId());
 
     String imageUuid = RandomCodeGenerator.generateUUIDCode();
     FieldImageStatistics stats = googleCloudClient.processIndiceImageField(field, imageUuid, indice, from);
@@ -125,6 +126,9 @@ public class FieldService {
 
     fieldImage = fieldImageRepository.save(fieldImage);
 
+    log.info("Imagen procesada con éxito para el predio con uuid: {}, indice: {}, fecha: {}, usuario: {}", uuid,
+        indice.getName(), from, principal.getId());
+
     return fieldImage;
   }
 
@@ -133,6 +137,8 @@ public class FieldService {
 
     LocalDate to = LocalDate.now().plusDays(1);
     LocalDate from = to.minusYears(1);
+
+    log.info("Consultando imágenes para el predio con uuid: {}, nombre: {}, fecha: {} - {}", uuid, field.getName(), from, to);
 
     List<FieldImageDateDto> images = googleCloudClient.imageDates(field, from, to);
     Collections.sort(images, Comparator.comparing(FieldImageDateDto::getImageDate).reversed());
