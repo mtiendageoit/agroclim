@@ -18,7 +18,9 @@ import com.agroclim.webapp.field.images.*;
 import com.agroclim.webapp.indices.Indice;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class GoogleCloudClient {
@@ -49,7 +51,8 @@ public class GoogleCloudClient {
     return response.getBody();
   }
 
-  public FieldImageStatistics processIndiceImageField(Field field, String imageName, Indice indice, LocalDate imageDate) {
+  public FieldImageStatistics processIndiceImageField(Field field, String imageName, Indice indice,
+      LocalDate imageDate) {
     List<List<Double>> coords = coordinatesFromWKT(field.getWkt());
 
     LocalDate to = imageDate.plusDays(1);
@@ -63,10 +66,11 @@ public class GoogleCloudClient {
 
     try {
       ResponseEntity<FieldImageStatistics> response = restTemplate.postForEntity(indice.getUrl(), requestObject,
-      FieldImageStatistics.class);
+          FieldImageStatistics.class);
       return response.getBody();
     } catch (Exception e) {
-      e.getMessage();
+      log.error("Error processing image for field {}: {}", field.getId(), e.getMessage());
+      log.error("Stack trace:", e);
     }
 
     return null;

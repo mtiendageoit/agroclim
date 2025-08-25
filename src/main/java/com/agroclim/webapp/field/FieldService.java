@@ -14,7 +14,9 @@ import com.agroclim.webapp.security.UserPrincipal;
 import com.agroclim.webapp.utils.RandomCodeGenerator;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class FieldService {
@@ -100,6 +102,8 @@ public class FieldService {
 
     Indice indice = indiceRepository.findById(indiceId)
         .orElseThrow(() -> new NotFoundException("indice-not-exists", "The indice id not exists"));
+
+    log.info("Processing image for field {}: {} - {} - {}", uuid, indiceId, from, principal.getId());
 
     String imageUuid = RandomCodeGenerator.generateUUIDCode();
     FieldImageStatistics stats = googleCloudClient.processIndiceImageField(field, imageUuid, indice, from);
